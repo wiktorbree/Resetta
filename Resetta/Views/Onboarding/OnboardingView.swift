@@ -74,9 +74,7 @@ struct OnboardingView: View {
         .padding(.vertical, 32)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
-        .onAppear {
-            OrientationService.shared.lockPortrait()
-        }
+        .portraitOnlyOrientationScope()
     }
 
     private var currentPage: OnboardingPage {

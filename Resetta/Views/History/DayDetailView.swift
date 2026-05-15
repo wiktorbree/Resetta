@@ -16,9 +16,7 @@ struct DayDetailView: View {
         }
         .navigationTitle(date.formatted(date: .abbreviated, time: .omitted))
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            OrientationService.shared.lockPortrait()
-        }
+        .portraitOnlyOrientationScope()
     }
 }
 

@@ -35,9 +35,7 @@ struct HistoryView: View {
             }
         }
         .navigationTitle("History")
-        .onAppear {
-            OrientationService.shared.lockPortrait()
-        }
+        .portraitOnlyOrientationScope()
     }
 
     private var weekSessions: [DetoxSession] {

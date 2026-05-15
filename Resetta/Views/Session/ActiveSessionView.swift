@@ -70,13 +70,12 @@ struct ActiveSessionView: View {
         }
         .statusBarHidden(true)
         .onAppear {
-            OrientationService.shared.allowSessionOrientations()
             resumeTimer()
         }
         .onDisappear {
             cleanup()
-            OrientationService.shared.lockPortrait()
         }
+        .activeSessionOrientationScope()
         .onChange(of: scenePhase) { _, newPhase in
             switch newPhase {
             case .active:

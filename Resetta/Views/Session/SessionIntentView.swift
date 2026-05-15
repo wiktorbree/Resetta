@@ -66,9 +66,7 @@ struct SessionIntentView: View {
         }
         .padding(24)
         .background(Color(.systemBackground))
-        .onAppear {
-            OrientationService.shared.lockPortrait()
-        }
+        .portraitOnlyOrientationScope()
     }
 }
 

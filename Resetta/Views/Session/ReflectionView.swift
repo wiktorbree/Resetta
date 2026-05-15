@@ -64,8 +64,8 @@ struct ReflectionView: View {
         .onAppear {
             selectedFeeling = session.feeling
             note = session.note ?? ""
-            OrientationService.shared.lockPortrait()
         }
+        .portraitOnlyOrientationScope()
     }
 }
 

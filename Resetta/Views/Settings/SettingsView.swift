@@ -33,9 +33,7 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
-        .onAppear {
-            OrientationService.shared.lockPortrait()
-        }
+        .portraitOnlyOrientationScope()
     }
 }
 

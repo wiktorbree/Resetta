@@ -77,7 +77,6 @@ struct SessionFlowView: View {
 
     private func dismissFlow() {
         timer.reset()
-        OrientationService.shared.lockPortrait()
         dismiss()
     }
 }

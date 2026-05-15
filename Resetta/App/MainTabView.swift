@@ -17,9 +17,7 @@ struct MainTabView: View {
             }
         }
         .tint(ResettaTheme.accent)
-        .onAppear {
-            OrientationService.shared.lockPortrait()
-        }
+        .portraitOnlyOrientationScope()
     }
 }
 

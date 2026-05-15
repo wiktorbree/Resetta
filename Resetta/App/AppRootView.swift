@@ -12,9 +12,7 @@ struct AppRootView: View {
                 OnboardingView(onComplete: completeOnboarding)
             }
         }
-        .onAppear {
-            OrientationService.shared.lockPortrait()
-        }
+        .portraitOnlyOrientationScope()
     }
 
     private func completeOnboarding() {

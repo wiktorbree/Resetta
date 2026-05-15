@@ -70,9 +70,7 @@ struct HomeView: View {
         .padding(24)
         .navigationTitle("Resetta")
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
-            OrientationService.shared.lockPortrait()
-        }
+        .portraitOnlyOrientationScope()
         .fullScreenCover(item: $pendingDuration) { selection in
             SessionFlowView(duration: selection.duration)
         }
