@@ -5,16 +5,10 @@ struct EndSessionConfirmationView: View {
     let onEnd: () -> Void
 
     var body: some View {
-        VStack(spacing: 20) {
-            VStack(spacing: 8) {
-                Text("End this session?")
-                    .font(.title3.weight(.semibold))
-
-                Text("You can stop, but the discomfort may be the practice.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
+        VStack(spacing: 18) {
+            Text("End this session?")
+                .font(.title3.weight(.semibold))
+                .multilineTextAlignment(.center)
 
             VStack(spacing: 10) {
                 Button(action: onContinue) {
@@ -34,12 +28,12 @@ struct EndSessionConfirmationView: View {
                         .frame(height: 48)
                 }
                 .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.white.opacity(0.72))
             }
         }
-        .padding(22)
-        .frame(maxWidth: 340)
-        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .padding(20)
+        .frame(maxWidth: 320)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
         .colorScheme(.dark)
         .padding(24)
         .onTapGesture {}

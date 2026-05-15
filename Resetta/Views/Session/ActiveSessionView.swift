@@ -5,7 +5,6 @@ struct ActiveSessionView: View {
     let onCompleted: () -> Void
     let onEnded: () -> Void
 
-    @AppStorage("endConfirmationEnabled") private var endConfirmationEnabled = UserSettings.defaults.endConfirmationEnabled
     @AppStorage("hapticsEnabled") private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
     @AppStorage("keepScreenAwake") private var keepScreenAwake = UserSettings.defaults.keepScreenAwake
     @AppStorage("pureBlackModeEnabled") private var pureBlackModeEnabled = UserSettings.defaults.pureBlackModeEnabled
@@ -44,7 +43,7 @@ struct ActiveSessionView: View {
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(.white.opacity(0.82))
-                    .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                    .transition(.opacity)
                     .accessibilityHint("Shows a confirmation before ending the session")
                 }
             }
@@ -150,23 +149,24 @@ struct ActiveSessionView: View {
     private func handleEndButtonTapped() {
         guard updateTimer() else { return }
         HapticsService.lightImpact(enabled: hapticsEnabled)
+        hideEndButtonTask?.cancel()
+        hideEndButtonTask = nil
 
-        if endConfirmationEnabled {
-            hideEndButtonTask?.cancel()
-            withAnimation(.easeInOut(duration: 0.18)) {
-                showEndConfirmation = true
-            }
-        } else {
-            endSession()
+        withAnimation(.easeInOut(duration: 0.2)) {
+            showEndButton = false
+            showEndConfirmation = true
         }
     }
 
     private func continueSession() {
         guard updateTimer() else { return }
-        withAnimation(.easeInOut(duration: 0.18)) {
+        hideEndButtonTask?.cancel()
+        hideEndButtonTask = nil
+
+        withAnimation(.easeInOut(duration: 0.2)) {
             showEndConfirmation = false
+            showEndButton = false
         }
-        revealEndButton()
     }
 
     private func completeSession() {
