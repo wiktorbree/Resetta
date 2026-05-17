@@ -4,86 +4,116 @@ struct OnboardingView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let onComplete: () -> Void
+    private let onStartFirstSession: (TimeInterval) -> Void
+
     private static let pages = [
         OnboardingPage(
             title: "Your brain wasn't built for infinite stimulation.",
-            bodyText: "Every scroll, swipe and notification trains your mind to escape boredom.",
+            bodyText: "The feed always has another thing. You do not have to keep meeting it.",
             buttonTitle: "Continue"
         ),
         OnboardingPage(
             title: "Silence feels uncomfortable first.",
-            bodyText: "That discomfort is the point. Sit with it. Let your brain reset.",
+            bodyText: "That first restless minute is not failure. It is your attention settling.",
             buttonTitle: "Continue"
         ),
         OnboardingPage(
-            title: "This app does almost nothing.",
-            bodyText: "No feeds. No badges. No rewards. Just time away from stimulation.",
-            buttonTitle: "Start your first detox"
-        ),
-        OnboardingPage(
-            title: "Start small.",
-            bodyText: "Try a short reset. Put your phone down. Do nothing.",
-            buttonTitle: "Begin"
+            title: "This app does almost nothing. That's the point.",
+            bodyText: "No feed. No streak pressure. Start with two quiet minutes and put the phone down.",
+            buttonTitle: "Start 2-minute detox",
+            secondaryButtonTitle: "Not now",
+            suggestedDuration: 2 * 60
         )
     ]
 
     @State private var pageIndex = 0
 
-    init(onComplete: @escaping () -> Void) {
+    init(
+        onComplete: @escaping () -> Void,
+        onStartFirstSession: @escaping (TimeInterval) -> Void
+    ) {
         self.onComplete = onComplete
+        self.onStartFirstSession = onStartFirstSession
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            Text("Resetta")
-                .font(.headline.weight(.semibold))
-                .foregroundStyle(ResettaTheme.accent)
+        VStack(alignment: .leading, spacing: 0) {
+            header
 
-            Spacer(minLength: 40)
+            Spacer(minLength: 36)
 
             OnboardingPageView(
                 title: currentPage.title,
-                bodyText: currentPage.bodyText
+                bodyText: currentPage.bodyText,
+                suggestedMinutes: currentPage.suggestedMinutes
             )
             .id(pageIndex)
             .transition(.opacity)
 
-            Spacer(minLength: 40)
+            Spacer(minLength: 34)
 
-            HStack(spacing: 8) {
-                ForEach(Self.pages.indices, id: \.self) { index in
-                    Capsule()
-                        .fill(index == pageIndex ? ResettaTheme.accent : Color.secondary.opacity(0.22))
-                        .frame(width: index == pageIndex ? 24 : 8, height: 8)
-                }
-            }
-            .accessibilityHidden(true)
+            footer
+        }
+        .padding(.horizontal, 28)
+        .padding(.top, 30)
+        .padding(.bottom, 28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.systemBackground))
+        .portraitOnlyOrientationScope()
+    }
 
-            Button(action: advance) {
+    private var header: some View {
+        HStack {
+            Text("Resetta")
+                .font(.headline.weight(.semibold))
+                .foregroundStyle(ResettaTheme.accent)
+
+            Spacer()
+        }
+    }
+
+    private var footer: some View {
+        VStack(spacing: 14) {
+            pageIndicator
+
+            Button(action: primaryAction) {
                 Text(currentPage.buttonTitle)
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 54)
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .frame(height: 54)
             }
             .buttonStyle(.borderedProminent)
             .tint(ResettaTheme.accent)
             .controlSize(.large)
             .accessibilityLabel(currentPage.buttonTitle)
+
+            if let secondaryButtonTitle = currentPage.secondaryButtonTitle {
+                Button(secondaryButtonTitle, action: onComplete)
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+                    .padding(.top, 2)
+            }
         }
-        .padding(.horizontal, 28)
-        .padding(.vertical, 32)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(.systemBackground))
-        .portraitOnlyOrientationScope()
+    }
+
+    private var pageIndicator: some View {
+        HStack(spacing: 8) {
+            ForEach(Self.pages.indices, id: \.self) { index in
+                Capsule()
+                    .fill(index == pageIndex ? ResettaTheme.accent : Color.secondary.opacity(0.22))
+                    .frame(width: index == pageIndex ? 24 : 8, height: 8)
+            }
+        }
+        .accessibilityHidden(true)
     }
 
     private var currentPage: OnboardingPage {
         Self.pages[pageIndex]
     }
 
-    private func advance() {
-        if pageIndex == Self.pages.count - 1 {
-            onComplete()
+    private func primaryAction() {
+        if let suggestedDuration = currentPage.suggestedDuration {
+            onStartFirstSession(suggestedDuration)
             return
         }
 
@@ -97,8 +127,16 @@ private struct OnboardingPage {
     let title: String
     let bodyText: String
     let buttonTitle: String
+    var secondaryButtonTitle: String?
+    var suggestedDuration: TimeInterval?
+
+    var suggestedMinutes: Int? {
+        guard let suggestedDuration else { return nil }
+
+        return Int(suggestedDuration / 60)
+    }
 }
 
 #Preview {
-    OnboardingView(onComplete: {})
+    OnboardingView(onComplete: {}, onStartFirstSession: { _ in })
 }
