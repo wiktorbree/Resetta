@@ -10,6 +10,11 @@ struct UserSettings: Codable, Hashable {
 
     enum StorageKey {
         static let hasCompletedOnboarding = "hasCompletedOnboarding"
+        static let keepScreenAwake = "keepScreenAwake"
+        static let hapticsEnabled = "hapticsEnabled"
+        static let endConfirmationEnabled = "endConfirmationEnabled"
+        static let pureBlackModeEnabled = "pureBlackModeEnabled"
+        static let dailyReminderEnabled = "dailyReminderEnabled"
     }
 
     static let defaults = UserSettings(

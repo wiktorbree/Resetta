@@ -5,9 +5,10 @@ struct ActiveSessionView: View {
     let onCompleted: () -> Void
     let onEnded: () -> Void
 
-    @AppStorage("hapticsEnabled") private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
-    @AppStorage("keepScreenAwake") private var keepScreenAwake = UserSettings.defaults.keepScreenAwake
-    @AppStorage("pureBlackModeEnabled") private var pureBlackModeEnabled = UserSettings.defaults.pureBlackModeEnabled
+    @AppStorage(UserSettings.StorageKey.endConfirmationEnabled) private var endConfirmationEnabled = UserSettings.defaults.endConfirmationEnabled
+    @AppStorage(UserSettings.StorageKey.hapticsEnabled) private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
+    @AppStorage(UserSettings.StorageKey.keepScreenAwake) private var keepScreenAwake = UserSettings.defaults.keepScreenAwake
+    @AppStorage(UserSettings.StorageKey.pureBlackModeEnabled) private var pureBlackModeEnabled = UserSettings.defaults.pureBlackModeEnabled
     @Environment(\.scenePhase) private var scenePhase
     @Environment(SessionTimerService.self) private var timer
     @State private var hasFinished = false
@@ -44,7 +45,7 @@ struct ActiveSessionView: View {
                     .buttonStyle(.plain)
                     .foregroundStyle(.white.opacity(0.82))
                     .transition(.opacity)
-                    .accessibilityHint("Shows a confirmation before ending the session")
+                    .accessibilityHint(endConfirmationEnabled ? "Shows a confirmation before ending the session" : "Ends the session")
                 }
             }
             .padding(.bottom, 52)
@@ -150,6 +151,11 @@ struct ActiveSessionView: View {
         HapticsService.lightImpact(enabled: hapticsEnabled)
         hideEndButtonTask?.cancel()
         hideEndButtonTask = nil
+
+        guard endConfirmationEnabled else {
+            endSession()
+            return
+        }
 
         withAnimation(.easeInOut(duration: 0.2)) {
             showEndButton = false

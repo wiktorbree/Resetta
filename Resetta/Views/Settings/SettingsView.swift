@@ -1,21 +1,26 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("endConfirmationEnabled") private var endConfirmationEnabled = UserSettings.defaults.endConfirmationEnabled
-    @AppStorage("hapticsEnabled") private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
-    @AppStorage("keepScreenAwake") private var keepScreenAwake = UserSettings.defaults.keepScreenAwake
-    @AppStorage("pureBlackModeEnabled") private var pureBlackModeEnabled = UserSettings.defaults.pureBlackModeEnabled
+    @AppStorage(UserSettings.StorageKey.endConfirmationEnabled) private var endConfirmationEnabled = UserSettings.defaults.endConfirmationEnabled
+    @AppStorage(UserSettings.StorageKey.hapticsEnabled) private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
+    @AppStorage(UserSettings.StorageKey.keepScreenAwake) private var keepScreenAwake = UserSettings.defaults.keepScreenAwake
+    @AppStorage(UserSettings.StorageKey.pureBlackModeEnabled) private var pureBlackModeEnabled = UserSettings.defaults.pureBlackModeEnabled
+    @AppStorage(UserSettings.StorageKey.dailyReminderEnabled) private var dailyReminderEnabled = UserSettings.defaults.dailyReminderEnabled
 
     var body: some View {
         Form {
             Section("Session") {
-                Toggle("Keep Screen Awake", isOn: $keepScreenAwake)
-                Toggle("Gentle Haptics", isOn: $hapticsEnabled)
-                Toggle("End Confirmation", isOn: $endConfirmationEnabled)
+                Toggle("Keep screen awake during session", isOn: $keepScreenAwake)
+                Toggle("Gentle haptics", isOn: $hapticsEnabled)
+                Toggle("End confirmation", isOn: $endConfirmationEnabled)
             }
 
             Section("Appearance") {
-                Toggle("Pure Black Timer", isOn: $pureBlackModeEnabled)
+                Toggle("Pure Black Mode", isOn: $pureBlackModeEnabled)
+            }
+
+            Section("Reminders") {
+                Toggle("Daily reminder", isOn: $dailyReminderEnabled)
             }
 
             Section("Privacy") {

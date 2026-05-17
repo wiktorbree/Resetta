@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct HomeView: View {
-    @AppStorage("hapticsEnabled") private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
+    @AppStorage(UserSettings.StorageKey.hapticsEnabled) private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
     @State private var selectedMinutes = 5
     @State private var pendingDuration: DurationSelection?
 

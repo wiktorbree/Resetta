@@ -4,7 +4,7 @@ struct ReflectionView: View {
     let session: DetoxSession
     let onSave: (SessionFeeling?, String) -> Void
 
-    @AppStorage("hapticsEnabled") private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
+    @AppStorage(UserSettings.StorageKey.hapticsEnabled) private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
     @State private var note = ""
     @State private var selectedFeeling: SessionFeeling?
 

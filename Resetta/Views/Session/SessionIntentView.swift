@@ -5,7 +5,7 @@ struct SessionIntentView: View {
     let onStart: (SessionIntent?) -> Void
     let onCancel: () -> Void
 
-    @AppStorage("hapticsEnabled") private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
+    @AppStorage(UserSettings.StorageKey.hapticsEnabled) private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
     @State private var selectedIntent: SessionIntent?
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 2)
