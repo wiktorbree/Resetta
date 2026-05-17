@@ -16,7 +16,7 @@ struct MainTabView: View {
                 .tag(tab)
             }
         }
-        .tint(ResettaTheme.accent)
+        .tint(ResettaTheme.accentText)
         .portraitOnlyOrientationScope()
     }
 }

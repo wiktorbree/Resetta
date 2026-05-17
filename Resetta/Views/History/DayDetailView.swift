@@ -4,6 +4,8 @@ struct DayDetailView: View {
     let date: Date
     let sessions: [DetoxSession]
 
+    @ScaledMetric(relativeTo: .largeTitle) private var totalDurationFontSize: CGFloat = 44
+
     private var sortedSessions: [DetoxSession] {
         sessions.sorted { $0.startDate > $1.startDate }
     }
@@ -13,7 +15,9 @@ struct DayDetailView: View {
             VStack(alignment: .leading, spacing: 28) {
                 VStack(alignment: .leading, spacing: 8) {
                     Text(TimeFormatting.duration(totalDuration))
-                        .font(.system(size: 44, weight: .semibold, design: .rounded).monospacedDigit())
+                        .font(.system(size: totalDurationFontSize, weight: .semibold, design: .rounded).monospacedDigit())
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
 
                     Text(summaryText)
                         .font(.subheadline)
@@ -52,15 +56,26 @@ private struct SessionDetailRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .firstTextBaseline) {
-                Text(timeRangeText)
-                    .font(.headline)
+            ViewThatFits(in: .horizontal) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(timeRangeText)
+                        .font(.headline)
 
-                Spacer(minLength: 12)
+                    Spacer(minLength: 12)
 
-                Text(TimeFormatting.duration(session.actualDuration))
-                    .font(.subheadline.monospacedDigit())
-                    .foregroundStyle(.secondary)
+                    Text(TimeFormatting.duration(session.actualDuration))
+                        .font(.subheadline.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(timeRangeText)
+                        .font(.headline)
+
+                    Text(TimeFormatting.duration(session.actualDuration))
+                        .font(.subheadline.monospacedDigit())
+                        .foregroundStyle(.secondary)
+                }
             }
 
             VStack(alignment: .leading, spacing: 7) {

@@ -9,13 +9,14 @@ struct EndSessionConfirmationView: View {
             Text("End this session?")
                 .font(.title3.weight(.semibold))
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
 
             VStack(spacing: 8) {
                 Button(action: onContinue) {
                     Text("Continue")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 46)
+                        .frame(minHeight: 46)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.white)
@@ -25,7 +26,7 @@ struct EndSessionConfirmationView: View {
                     Text("End Session")
                         .font(.subheadline.weight(.medium))
                         .frame(maxWidth: .infinity)
-                        .frame(height: 46)
+                        .frame(minHeight: 46)
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.white.opacity(0.72))

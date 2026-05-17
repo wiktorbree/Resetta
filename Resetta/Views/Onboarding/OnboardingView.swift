@@ -37,27 +37,31 @@ struct OnboardingView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            header
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 0) {
+                    header
 
-            Spacer(minLength: 36)
+                    Spacer(minLength: 36)
 
-            OnboardingPageView(
-                title: currentPage.title,
-                bodyText: currentPage.bodyText,
-                suggestedMinutes: currentPage.suggestedMinutes
-            )
-            .id(pageIndex)
-            .transition(.opacity)
+                    OnboardingPageView(
+                        title: currentPage.title,
+                        bodyText: currentPage.bodyText,
+                        suggestedMinutes: currentPage.suggestedMinutes
+                    )
+                    .id(pageIndex)
+                    .transition(.opacity)
 
-            Spacer(minLength: 34)
+                    Spacer(minLength: 34)
 
-            footer
+                    footer
+                }
+                .padding(.horizontal, 28)
+                .padding(.top, 30)
+                .padding(.bottom, 28)
+                .frame(maxWidth: .infinity, minHeight: proxy.size.height, alignment: .top)
+            }
         }
-        .padding(.horizontal, 28)
-        .padding(.top, 30)
-        .padding(.bottom, 28)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color(.systemBackground))
         .portraitOnlyOrientationScope()
     }
@@ -66,7 +70,7 @@ struct OnboardingView: View {
         HStack {
             Text("Resetta")
                 .font(.headline.weight(.semibold))
-                .foregroundStyle(ResettaTheme.accent)
+                .foregroundStyle(ResettaTheme.accentText)
 
             Spacer()
         }
@@ -80,7 +84,7 @@ struct OnboardingView: View {
                 Text(currentPage.buttonTitle)
                 .font(.headline)
                 .frame(maxWidth: .infinity)
-                .frame(height: 54)
+                .frame(minHeight: 54)
             }
             .buttonStyle(.borderedProminent)
             .tint(ResettaTheme.accent)
@@ -90,6 +94,8 @@ struct OnboardingView: View {
             if let secondaryButtonTitle = currentPage.secondaryButtonTitle {
                 Button(secondaryButtonTitle, action: onComplete)
                     .font(.subheadline.weight(.medium))
+                    .frame(maxWidth: .infinity)
+                    .frame(minHeight: 44)
                     .foregroundStyle(.secondary)
                     .padding(.top, 2)
             }
@@ -100,7 +106,7 @@ struct OnboardingView: View {
         HStack(spacing: 8) {
             ForEach(Self.pages.indices, id: \.self) { index in
                 Capsule()
-                    .fill(index == pageIndex ? ResettaTheme.accent : Color.secondary.opacity(0.22))
+                    .fill(index == pageIndex ? ResettaTheme.accentText : Color.secondary.opacity(0.22))
                     .frame(width: index == pageIndex ? 24 : 8, height: 8)
             }
         }

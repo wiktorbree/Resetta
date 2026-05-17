@@ -9,8 +9,10 @@ struct ActiveSessionView: View {
     @AppStorage(UserSettings.StorageKey.hapticsEnabled) private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
     @AppStorage(UserSettings.StorageKey.keepScreenAwake) private var keepScreenAwake = UserSettings.defaults.keepScreenAwake
     @AppStorage(UserSettings.StorageKey.pureBlackModeEnabled) private var pureBlackModeEnabled = UserSettings.defaults.pureBlackModeEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
     @Environment(SessionTimerService.self) private var timer
+    @ScaledMetric(relativeTo: .largeTitle) private var timerFontSize: CGFloat = 86
     @State private var hasFinished = false
     @State private var hideEndButtonTask: Task<Void, Never>?
     @State private var showEndButton = false
@@ -22,14 +24,25 @@ struct ActiveSessionView: View {
             ResettaTheme.activeBackground(pureBlack: pureBlackModeEnabled)
                 .ignoresSafeArea()
 
-            Text(TimeFormatting.countdown(timer.remainingTime))
-                .font(.system(size: 86, weight: .medium, design: .monospaced))
-                .monospacedDigit()
-                .foregroundStyle(.white.opacity(0.92))
-                .lineLimit(1)
-                .minimumScaleFactor(0.46)
-                .accessibilityLabel("\(TimeFormatting.countdown(timer.remainingTime)) remaining")
-                .padding(.horizontal, 32)
+            GeometryReader { proxy in
+                let availableFontSize = max(CGFloat(52), min(proxy.size.width * 0.26, proxy.size.height * 0.42))
+                let resolvedFontSize = min(timerFontSize, availableFontSize)
+
+                Text(TimeFormatting.countdown(timer.remainingTime))
+                    .font(.system(size: resolvedFontSize, weight: .medium, design: .monospaced))
+                    .monospacedDigit()
+                    .foregroundStyle(.white.opacity(0.92))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.46)
+                    .accessibilityLabel(TimeFormatting.accessibleCountdown(timer.remainingTime))
+                    .accessibilityAddTraits(.updatesFrequently)
+                    .accessibilityHint("Shows the end session control")
+                    .accessibilityAction(named: Text("Show End Session Button")) {
+                        revealEndButton()
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding(.horizontal, 32)
+            }
 
             VStack {
                 Spacer()
@@ -39,7 +52,7 @@ struct ActiveSessionView: View {
                         Text("End Session")
                             .font(.subheadline.weight(.medium))
                             .padding(.horizontal, 20)
-                            .frame(height: 44)
+                            .frame(minHeight: 44)
                             .background(.white.opacity(0.08), in: Capsule())
                     }
                     .buttonStyle(.plain)
@@ -53,6 +66,7 @@ struct ActiveSessionView: View {
             if showEndConfirmation {
                 Color.black.opacity(0.38)
                     .ignoresSafeArea()
+                    .accessibilityHidden(true)
                     .onTapGesture {
                         continueSession()
                     }
@@ -130,7 +144,7 @@ struct ActiveSessionView: View {
             HapticsService.endSessionButtonRevealed(enabled: hapticsEnabled)
         }
 
-        withAnimation(.easeInOut(duration: 0.22)) {
+        withAnimation(motionAnimation(duration: 0.22)) {
             showEndButton = true
         }
 
@@ -143,7 +157,7 @@ struct ActiveSessionView: View {
     }
 
     private func hideEndButton() {
-        withAnimation(.easeInOut(duration: 0.26)) {
+        withAnimation(motionAnimation(duration: 0.26)) {
             showEndButton = false
         }
     }
@@ -158,7 +172,7 @@ struct ActiveSessionView: View {
             return
         }
 
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withAnimation(motionAnimation(duration: 0.2)) {
             showEndButton = false
             showEndConfirmation = true
         }
@@ -169,10 +183,14 @@ struct ActiveSessionView: View {
         hideEndButtonTask?.cancel()
         hideEndButtonTask = nil
 
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withAnimation(motionAnimation(duration: 0.2)) {
             showEndConfirmation = false
             showEndButton = false
         }
+    }
+
+    private func motionAnimation(duration: Double) -> Animation? {
+        reduceMotion ? nil : .easeInOut(duration: duration)
     }
 
     private func completeSession() {
@@ -198,9 +216,15 @@ struct ActiveSessionView: View {
 }
 
 #Preview {
-    let timer = SessionTimerService()
-    timer.start(duration: 5 * 60, intent: nil)
+    ActiveSessionView(onCompleted: {}, onEnded: {})
+        .environment(ActiveSessionPreview.timer)
+}
 
-    return ActiveSessionView(onCompleted: {}, onEnded: {})
-        .environment(timer)
+private enum ActiveSessionPreview {
+    @MainActor
+    static var timer: SessionTimerService {
+        let timer = SessionTimerService()
+        timer.start(duration: 5 * 60, intent: nil)
+        return timer
+    }
 }

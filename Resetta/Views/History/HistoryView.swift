@@ -2,6 +2,7 @@ import SwiftData
 import SwiftUI
 
 struct HistoryView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Query(sort: \DetoxSession.startDate, order: .reverse) private var sessions: [DetoxSession]
     @State private var displayedMonth = Calendar.current.dateInterval(of: .month, for: Date())?.start ?? Date()
 
@@ -12,11 +13,15 @@ struct HistoryView: View {
             VStack(alignment: .leading, spacing: 26) {
                 monthHeader
 
-                HistoryMonthGrid(
-                    calendar: calendar,
-                    days: calendarDays,
-                    maxDayDuration: maxDayDuration
-                )
+                if sessions.isEmpty {
+                    EmptyHistoryStateView()
+                } else {
+                    HistoryMonthGrid(
+                        calendar: calendar,
+                        days: calendarDays,
+                        maxDayDuration: maxDayDuration
+                    )
+                }
             }
             .padding(24)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -56,7 +61,7 @@ struct HistoryView: View {
         Button(action: action) {
             Image(systemName: systemImage)
                 .font(.subheadline.weight(.semibold))
-                .frame(width: 36, height: 36)
+                .frame(width: 44, height: 44)
                 .background(ResettaTheme.quietFill, in: Circle())
                 .overlay {
                     Circle()
@@ -162,9 +167,38 @@ struct HistoryView: View {
             return
         }
 
-        withAnimation(.easeInOut(duration: 0.2)) {
+        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) {
             displayedMonth = nextMonthStart
         }
+    }
+}
+
+private struct EmptyHistoryStateView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Image(systemName: "clock")
+                .font(.title2.weight(.semibold))
+                .foregroundStyle(ResettaTheme.accentText)
+                .frame(width: 44, height: 44)
+                .background(ResettaTheme.quietFill, in: Circle())
+                .accessibilityHidden(true)
+
+            Text("No sessions yet")
+                .font(.title3.weight(.semibold))
+
+            Text("Completed detox sessions will appear here.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(ResettaTheme.quietFill, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(ResettaTheme.subtleLine, lineWidth: 1)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 

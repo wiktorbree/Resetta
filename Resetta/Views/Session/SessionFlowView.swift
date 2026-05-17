@@ -5,6 +5,7 @@ struct SessionFlowView: View {
     let duration: TimeInterval
 
     @AppStorage(UserSettings.StorageKey.hapticsEnabled) private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(SessionStorageService.self) private var storage
@@ -58,7 +59,7 @@ struct SessionFlowView: View {
             }
         }
         .interactiveDismissDisabled(stage == .active)
-        .animation(.easeInOut(duration: 0.22), value: stage)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: stage)
     }
 
     private func startSession(intent: SessionIntent?) {

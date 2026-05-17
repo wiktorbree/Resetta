@@ -8,6 +8,16 @@ enum TimeFormatting {
         return "\(minutes):\(String(format: "%02d", seconds))"
     }
 
+    static func accessibleCountdown(_ interval: TimeInterval) -> String {
+        let totalSeconds = max(0, Int(ceil(interval)))
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        let minuteText = minutes == 1 ? "1 minute" : "\(minutes) minutes"
+        let secondText = seconds == 1 ? "1 second" : "\(seconds) seconds"
+
+        return "\(minuteText), \(secondText) remaining"
+    }
+
     static func duration(_ interval: TimeInterval) -> String {
         let totalMinutes = max(0, Int(round(interval / 60)))
 

@@ -9,8 +9,10 @@ struct DurationPresetView: View {
         Button(action: action) {
             Text("\(minutes)")
                 .font(.subheadline.weight(.semibold).monospacedDigit())
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
                 .frame(maxWidth: .infinity)
-                .frame(height: 46)
+                .frame(minHeight: 46)
                 .background(backgroundStyle, in: Capsule())
                 .overlay {
                     Capsule()
@@ -21,6 +23,7 @@ struct DurationPresetView: View {
         .buttonStyle(.plain)
         .foregroundStyle(isSelected ? Color.white : Color.primary)
         .accessibilityLabel("\(minutes) minutes")
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 

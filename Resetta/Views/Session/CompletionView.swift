@@ -6,43 +6,49 @@ struct CompletionView: View {
     let onDone: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 26) {
-            Spacer(minLength: 48)
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 26) {
+                    Spacer(minLength: 48)
 
-            VStack(alignment: .leading, spacing: 12) {
-                Text(session.completed ? "Session complete." : "Session ended.")
-                    .font(.title.weight(.semibold))
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(session.completed ? "Session complete." : "Session ended.")
+                            .font(.title.weight(.semibold))
+                            .fixedSize(horizontal: false, vertical: true)
 
-                Text(bodyText)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .lineSpacing(3)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+                        Text(bodyText)
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+                            .lineSpacing(3)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
 
-            Spacer(minLength: 48)
+                    Spacer(minLength: 48)
 
-            VStack(spacing: 12) {
-                Button(action: onReflect) {
-                    Text("Reflect")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 54)
+                    VStack(spacing: 12) {
+                        Button(action: onReflect) {
+                            Text("Reflect")
+                                .font(.headline)
+                                .frame(maxWidth: .infinity)
+                                .frame(minHeight: 54)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(ResettaTheme.accent)
+
+                        Button(action: onDone) {
+                            Text("Done")
+                                .font(.subheadline.weight(.medium))
+                                .frame(maxWidth: .infinity)
+                                .frame(minHeight: 50)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.secondary)
+                    }
                 }
-                .buttonStyle(.borderedProminent)
-                .tint(ResettaTheme.accent)
-
-                Button(action: onDone) {
-                    Text("Done")
-                        .font(.subheadline.weight(.medium))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 50)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
+                .padding(24)
+                .frame(minHeight: proxy.size.height, alignment: .top)
             }
         }
-        .padding(24)
         .background(Color(.systemBackground))
         .portraitOnlyOrientationScope()
     }

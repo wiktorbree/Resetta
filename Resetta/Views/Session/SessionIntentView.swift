@@ -11,60 +11,65 @@ struct SessionIntentView: View {
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 2)
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 26) {
-            HStack {
-                Spacer()
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 26) {
+                    HStack {
+                        Spacer()
 
-                Button(action: onCancel) {
-                    Image(systemName: "xmark")
-                        .font(.headline)
-                        .frame(width: 44, height: 44)
-                        .contentShape(Circle())
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
-                .accessibilityLabel("Close")
-            }
-
-            Spacer(minLength: 28)
-
-            VStack(alignment: .leading, spacing: 10) {
-                Text(TimeFormatting.duration(duration))
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(ResettaTheme.accent)
-
-                Text("What are you doing this for?")
-                    .font(.title.weight(.semibold))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-
-            LazyVGrid(columns: columns, spacing: 10) {
-                ForEach(SessionIntent.allCases) { intent in
-                    IntentOptionButton(
-                        title: intent.rawValue,
-                        isSelected: selectedIntent == intent
-                    ) {
-                        selectedIntent = selectedIntent == intent ? nil : intent
-                        HapticsService.selection(enabled: hapticsEnabled)
+                        Button(action: onCancel) {
+                            Image(systemName: "xmark")
+                                .font(.headline)
+                                .frame(width: 44, height: 44)
+                                .contentShape(Circle())
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.secondary)
+                        .accessibilityLabel("Close")
                     }
+
+                    Spacer(minLength: 28)
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(TimeFormatting.duration(duration))
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(ResettaTheme.accentText)
+
+                        Text("What are you doing this for?")
+                            .font(.title.weight(.semibold))
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    LazyVGrid(columns: columns, spacing: 10) {
+                        ForEach(SessionIntent.allCases) { intent in
+                            IntentOptionButton(
+                                title: intent.rawValue,
+                                isSelected: selectedIntent == intent
+                            ) {
+                                selectedIntent = selectedIntent == intent ? nil : intent
+                                HapticsService.selection(enabled: hapticsEnabled)
+                            }
+                        }
+                    }
+
+                    Spacer(minLength: 28)
+
+                    Button {
+                        onStart(selectedIntent)
+                    } label: {
+                        Text("Start")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .frame(minHeight: 54)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(ResettaTheme.accent)
+                    .controlSize(.large)
                 }
+                .padding(24)
+                .frame(minHeight: proxy.size.height, alignment: .top)
             }
-
-            Spacer(minLength: 28)
-
-            Button {
-                onStart(selectedIntent)
-            } label: {
-                Text("Start")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 54)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(ResettaTheme.accent)
-            .controlSize(.large)
         }
-        .padding(24)
         .background(Color(.systemBackground))
         .portraitOnlyOrientationScope()
     }
@@ -79,8 +84,11 @@ private struct IntentOptionButton: View {
         Button(action: action) {
             Text(title)
                 .font(.subheadline.weight(.medium))
+                .lineLimit(2)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.85)
                 .frame(maxWidth: .infinity)
-                .frame(height: 56)
+                .frame(minHeight: 56)
                 .background(
                     isSelected ? AnyShapeStyle(ResettaTheme.accent) : AnyShapeStyle(ResettaTheme.quietFill),
                     in: RoundedRectangle(cornerRadius: 14, style: .continuous)
@@ -92,6 +100,8 @@ private struct IntentOptionButton: View {
         }
         .buttonStyle(.plain)
         .foregroundStyle(isSelected ? Color.white : Color.primary)
+        .accessibilityLabel(title)
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

@@ -37,9 +37,10 @@ private struct SuggestedSessionView: View {
             HStack(spacing: 16) {
                 Image(systemName: "timer")
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(ResettaTheme.accent)
+                    .foregroundStyle(ResettaTheme.accentText)
                     .frame(width: 34, height: 34)
                     .background(ResettaTheme.quietFill, in: Circle())
+                    .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text("First reset")

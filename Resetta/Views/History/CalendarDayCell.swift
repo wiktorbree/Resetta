@@ -16,12 +16,12 @@ struct CalendarDayCell: View {
                 .background {
                     if isToday {
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(ResettaTheme.accent.opacity(0.11))
+                            .fill(ResettaTheme.accentText.opacity(0.14))
                     }
                 }
 
             Circle()
-                .fill(ResettaTheme.accent)
+                .fill(ResettaTheme.accentText)
                 .frame(width: dotSize, height: dotSize)
                 .opacity(dotOpacity)
                 .accessibilityHidden(true)
@@ -39,7 +39,7 @@ struct CalendarDayCell: View {
 
     private var dayForegroundStyle: some ShapeStyle {
         if isToday {
-            return AnyShapeStyle(ResettaTheme.accent)
+            return AnyShapeStyle(ResettaTheme.accentText)
         }
 
         return AnyShapeStyle(isInDisplayedMonth ? Color.primary : Color.secondary.opacity(0.45))
