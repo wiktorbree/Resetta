@@ -14,7 +14,7 @@ struct SessionFlowView: View {
     @State private var savedSession: DetoxSession?
 
     var body: some View {
-        Group {
+        ZStack {
             switch stage {
             case .intent:
                 SessionIntentView(
@@ -22,7 +22,7 @@ struct SessionFlowView: View {
                     onStart: startSession(intent:),
                     onCancel: dismissFlow
                 )
-                .transition(.opacity)
+                .transition(ResettaTheme.calmTransition)
             case .active:
                 ActiveSessionView(
                     onCompleted: { finishSession(completed: true) },
@@ -38,7 +38,7 @@ struct SessionFlowView: View {
                         },
                         onDone: dismissFlow
                     )
-                    .transition(.opacity)
+                    .transition(ResettaTheme.calmTransition)
                 }
             case .reflection:
                 if let savedSession {
@@ -54,12 +54,13 @@ struct SessionFlowView: View {
                             dismissFlow()
                         }
                     )
-                    .transition(.opacity)
+                    .transition(ResettaTheme.calmTransition)
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .interactiveDismissDisabled(stage == .active)
-        .animation(reduceMotion ? nil : .easeInOut(duration: 0.22), value: stage)
+        .animation(ResettaTheme.calmAnimation(reduceMotion: reduceMotion, duration: 0.3), value: stage)
     }
 
     private func startSession(intent: SessionIntent?) {

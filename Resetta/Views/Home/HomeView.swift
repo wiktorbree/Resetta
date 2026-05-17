@@ -8,35 +8,36 @@ struct HomeView: View {
     @State private var pendingDuration: DurationSelection?
 
     private let presets = [5, 15, 30, 60]
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 4)
+    private let columns = [GridItem(.adaptive(minimum: 72), spacing: 12)]
 
     var body: some View {
         GeometryReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: 26) {
-                    VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 34) {
+                    VStack(alignment: .leading, spacing: 12) {
                         Text("Today")
-                            .font(.subheadline.weight(.semibold))
+                            .font(.footnote.weight(.medium))
                             .foregroundStyle(.secondary)
 
                         Text("Ready to disconnect?")
-                            .font(.title.weight(.semibold))
+                            .font(.largeTitle.weight(.semibold))
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    VStack(alignment: .leading, spacing: 8) {
+                    VStack(alignment: .leading, spacing: 6) {
                         Text("\(selectedMinutes)")
-                            .font(.system(size: selectedDurationFontSize, weight: .semibold, design: .rounded).monospacedDigit())
+                            .font(.system(size: selectedDurationFontSize, weight: .medium, design: .default).monospacedDigit())
                             .lineLimit(1)
                             .minimumScaleFactor(0.7)
+                            .contentTransition(.numericText(value: Double(selectedMinutes)))
                             .accessibilityLabel("\(selectedMinutes) minutes selected")
 
                         Text(selectedMinutes == 1 ? "minute" : "minutes")
-                            .font(.title3)
+                            .font(.title3.weight(.regular))
                             .foregroundStyle(.secondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 16)
+                    .padding(.top, 18)
 
                     LazyVGrid(columns: columns, spacing: 10) {
                         ForEach(presets, id: \.self) { minutes in
@@ -44,7 +45,9 @@ struct HomeView: View {
                                 minutes: minutes,
                                 isSelected: selectedMinutes == minutes
                             ) {
-                                selectedMinutes = minutes
+                                withAnimation(.easeInOut(duration: 0.18)) {
+                                    selectedMinutes = minutes
+                                }
                                 HapticsService.selection(enabled: hapticsEnabled)
                             }
                         }
@@ -52,29 +55,30 @@ struct HomeView: View {
 
                     Spacer(minLength: 24)
 
-                    VStack(spacing: 12) {
+                    VStack(spacing: 14) {
                         Button {
                             pendingDuration = DurationSelection(duration: TimeInterval(selectedMinutes * 60))
                             HapticsService.lightImpact(enabled: hapticsEnabled)
                         } label: {
                             Text("Start Detox")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .frame(minHeight: 54)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(ResettaTheme.accent)
-                        .controlSize(.large)
+                        .buttonStyle(ResettaPrimaryButtonStyle())
 
                         Text("Sit with the boredom.")
                             .font(.subheadline)
                             .foregroundStyle(.secondary)
+                            .frame(maxWidth: .infinity)
                     }
                 }
-                .padding(24)
-                .frame(minHeight: proxy.size.height, alignment: .top)
+                .padding(.horizontal, ResettaTheme.horizontalPadding(for: proxy.size.width))
+                .padding(.top, 48)
+                .padding(.bottom, max(34, proxy.safeAreaInsets.bottom + 24))
+                .frame(maxWidth: ResettaTheme.contentWidth(for: proxy.size.width), minHeight: proxy.size.height, alignment: .top)
+                .frame(maxWidth: .infinity)
             }
+            .scrollIndicators(.hidden)
         }
+        .background(ResettaTheme.screenBackground.ignoresSafeArea())
         .navigationTitle("Resetta")
         .navigationBarTitleDisplayMode(.inline)
         .portraitOnlyOrientationScope()

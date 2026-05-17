@@ -8,7 +8,7 @@ struct ReflectionView: View {
     @State private var note = ""
     @State private var selectedFeeling: SessionFeeling?
 
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 2)
+    private let columns = [GridItem(.adaptive(minimum: 148), spacing: 12)]
 
     init(session: DetoxSession, onSave: @escaping (SessionFeeling?, String) -> Void) {
         self.session = session
@@ -20,9 +20,10 @@ struct ReflectionView: View {
     var body: some View {
         GeometryReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 30) {
                     Text("How did it feel?")
                         .font(.largeTitle.weight(.semibold))
+                        .lineSpacing(2)
                         .fixedSize(horizontal: false, vertical: true)
 
                     LazyVGrid(columns: columns, spacing: 12) {
@@ -31,7 +32,9 @@ struct ReflectionView: View {
                                 title: feeling.rawValue,
                                 isSelected: selectedFeeling == feeling
                             ) {
-                                selectedFeeling = selectedFeeling == feeling ? nil : feeling
+                                withAnimation(.easeInOut(duration: 0.18)) {
+                                    selectedFeeling = selectedFeeling == feeling ? nil : feeling
+                                }
                                 HapticsService.selection(enabled: hapticsEnabled)
                             }
                         }
@@ -41,21 +44,25 @@ struct ReflectionView: View {
                         TextEditor(text: $note)
                             .font(.body)
                             .scrollContentBackground(.hidden)
-                            .padding(10)
-                            .frame(minHeight: 150)
+                            .padding(12)
+                            .frame(minHeight: 172)
                             .accessibilityLabel("Reflection note")
 
                         if note.isEmpty {
                             Text("Add a note...")
                                 .font(.body)
                                 .foregroundStyle(.tertiary)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 18)
+                                .padding(.horizontal, 18)
+                                .padding(.vertical, 20)
                                 .allowsHitTesting(false)
                                 .accessibilityHidden(true)
                         }
                     }
-                    .background(ResettaTheme.quietFill, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                    .background(ResettaTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 20, style: .continuous)
+                            .stroke(ResettaTheme.subtleLine, lineWidth: 1)
+                    }
 
                     Spacer()
 
@@ -63,18 +70,18 @@ struct ReflectionView: View {
                         onSave(selectedFeeling, note)
                     } label: {
                         Text("Save")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .frame(minHeight: 56)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(ResettaTheme.accent)
+                    .buttonStyle(ResettaPrimaryButtonStyle())
                 }
-                .padding(24)
-                .frame(minHeight: proxy.size.height, alignment: .top)
+                .padding(.horizontal, ResettaTheme.horizontalPadding(for: proxy.size.width))
+                .padding(.top, max(52, proxy.safeAreaInsets.top + 32))
+                .padding(.bottom, max(34, proxy.safeAreaInsets.bottom + 24))
+                .frame(maxWidth: ResettaTheme.contentWidth(for: proxy.size.width), minHeight: proxy.size.height, alignment: .top)
+                .frame(maxWidth: .infinity)
             }
+            .scrollIndicators(.hidden)
         }
-        .background(Color(.systemBackground))
+        .background(ResettaTheme.screenBackground.ignoresSafeArea())
         .portraitOnlyOrientationScope()
     }
 }
@@ -87,23 +94,11 @@ private struct FeelingOptionButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.headline)
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.85)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 58)
-                .background(
-                    isSelected ? AnyShapeStyle(ResettaTheme.accent) : AnyShapeStyle(ResettaTheme.quietFill),
-                    in: RoundedRectangle(cornerRadius: 16, style: .continuous)
-                )
-                .overlay {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(isSelected ? ResettaTheme.accent : ResettaTheme.subtleLine, lineWidth: 1)
-                }
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(isSelected ? Color.white : Color.primary)
+        .buttonStyle(ResettaOptionButtonStyle(isSelected: isSelected))
         .accessibilityLabel(title)
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
         .accessibilityAddTraits(isSelected ? .isSelected : [])

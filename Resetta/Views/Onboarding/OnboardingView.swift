@@ -42,7 +42,7 @@ struct OnboardingView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     header
 
-                    Spacer(minLength: 36)
+                    Spacer(minLength: 52)
 
                     OnboardingPageView(
                         title: currentPage.title,
@@ -50,26 +50,28 @@ struct OnboardingView: View {
                         suggestedMinutes: currentPage.suggestedMinutes
                     )
                     .id(pageIndex)
-                    .transition(.opacity)
+                    .transition(ResettaTheme.calmTransition)
 
-                    Spacer(minLength: 34)
+                    Spacer(minLength: 44)
 
                     footer
                 }
-                .padding(.horizontal, 28)
-                .padding(.top, 30)
-                .padding(.bottom, 28)
-                .frame(maxWidth: .infinity, minHeight: proxy.size.height, alignment: .top)
+                .padding(.horizontal, ResettaTheme.horizontalPadding(for: proxy.size.width))
+                .padding(.top, max(30, proxy.safeAreaInsets.top + 14))
+                .padding(.bottom, max(30, proxy.safeAreaInsets.bottom + 24))
+                .frame(maxWidth: ResettaTheme.contentWidth(for: proxy.size.width), minHeight: proxy.size.height, alignment: .top)
+                .frame(maxWidth: .infinity)
             }
+            .scrollIndicators(.hidden)
         }
-        .background(Color(.systemBackground))
+        .background(ResettaTheme.screenBackground.ignoresSafeArea())
         .portraitOnlyOrientationScope()
     }
 
     private var header: some View {
         HStack {
             Text("Resetta")
-                .font(.headline.weight(.semibold))
+                .font(.subheadline.weight(.semibold))
                 .foregroundStyle(ResettaTheme.accentText)
 
             Spacer()
@@ -82,21 +84,13 @@ struct OnboardingView: View {
 
             Button(action: primaryAction) {
                 Text(currentPage.buttonTitle)
-                .font(.headline)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 54)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(ResettaTheme.accent)
-            .controlSize(.large)
+            .buttonStyle(ResettaPrimaryButtonStyle())
             .accessibilityLabel(currentPage.buttonTitle)
 
             if let secondaryButtonTitle = currentPage.secondaryButtonTitle {
                 Button(secondaryButtonTitle, action: onComplete)
-                    .font(.subheadline.weight(.medium))
-                    .frame(maxWidth: .infinity)
-                    .frame(minHeight: 44)
-                    .foregroundStyle(.secondary)
+                    .buttonStyle(ResettaQuietButtonStyle(foregroundStyle: AnyShapeStyle(Color.secondary)))
                     .padding(.top, 2)
             }
         }
@@ -107,7 +101,8 @@ struct OnboardingView: View {
             ForEach(Self.pages.indices, id: \.self) { index in
                 Capsule()
                     .fill(index == pageIndex ? ResettaTheme.accentText : Color.secondary.opacity(0.22))
-                    .frame(width: index == pageIndex ? 24 : 8, height: 8)
+                    .frame(width: 7, height: 7)
+                    .opacity(index == pageIndex ? 1 : 0.44)
             }
         }
         .accessibilityHidden(true)
@@ -123,7 +118,7 @@ struct OnboardingView: View {
             return
         }
 
-        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.22)) {
+        withAnimation(ResettaTheme.calmAnimation(reduceMotion: reduceMotion, duration: 0.3)) {
             pageIndex += 1
         }
     }

@@ -8,48 +8,45 @@ struct CompletionView: View {
     var body: some View {
         GeometryReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: 26) {
-                    Spacer(minLength: 48)
+                VStack(alignment: .leading, spacing: 36) {
+                    Spacer(minLength: 72)
 
-                    VStack(alignment: .leading, spacing: 12) {
+                    VStack(alignment: .leading, spacing: 16) {
                         Text(session.completed ? "Session complete." : "Session ended.")
-                            .font(.title.weight(.semibold))
+                            .font(.largeTitle.weight(.semibold))
+                            .lineSpacing(2)
                             .fixedSize(horizontal: false, vertical: true)
 
                         Text(bodyText)
-                            .font(.body)
+                            .font(.title3.weight(.regular))
                             .foregroundStyle(.secondary)
-                            .lineSpacing(3)
+                            .lineSpacing(5)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
-                    Spacer(minLength: 48)
+                    Spacer(minLength: 64)
 
                     VStack(spacing: 12) {
                         Button(action: onReflect) {
                             Text("Reflect")
-                                .font(.headline)
-                                .frame(maxWidth: .infinity)
-                                .frame(minHeight: 54)
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(ResettaTheme.accent)
+                        .buttonStyle(ResettaPrimaryButtonStyle())
 
                         Button(action: onDone) {
                             Text("Done")
-                                .font(.subheadline.weight(.medium))
-                                .frame(maxWidth: .infinity)
-                                .frame(minHeight: 50)
                         }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(.secondary)
+                        .buttonStyle(ResettaQuietButtonStyle(foregroundStyle: AnyShapeStyle(Color.secondary)))
                     }
                 }
-                .padding(24)
-                .frame(minHeight: proxy.size.height, alignment: .top)
+                .padding(.horizontal, ResettaTheme.horizontalPadding(for: proxy.size.width))
+                .padding(.top, max(24, proxy.safeAreaInsets.top + 12))
+                .padding(.bottom, max(34, proxy.safeAreaInsets.bottom + 24))
+                .frame(maxWidth: ResettaTheme.contentWidth(for: proxy.size.width), minHeight: proxy.size.height, alignment: .top)
+                .frame(maxWidth: .infinity)
             }
+            .scrollIndicators(.hidden)
         }
-        .background(Color(.systemBackground))
+        .background(ResettaTheme.screenBackground.ignoresSafeArea())
         .portraitOnlyOrientationScope()
     }
 

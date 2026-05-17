@@ -12,10 +12,10 @@ struct DayDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
-                VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 32) {
+                VStack(alignment: .leading, spacing: 10) {
                     Text(TimeFormatting.duration(totalDuration))
-                        .font(.system(size: totalDurationFontSize, weight: .semibold, design: .rounded).monospacedDigit())
+                        .font(.system(size: totalDurationFontSize, weight: .medium, design: .default).monospacedDigit())
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
 
@@ -33,9 +33,19 @@ struct DayDetailView: View {
                         }
                     }
                 }
+                .padding(.horizontal, 18)
+                .background(ResettaTheme.surface, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 22, style: .continuous)
+                        .stroke(ResettaTheme.subtleLine, lineWidth: 1)
+                }
             }
-            .padding(24)
+            .padding(.horizontal, 28)
+            .padding(.top, 28)
+            .padding(.bottom, 34)
         }
+        .scrollIndicators(.hidden)
+        .background(ResettaTheme.screenBackground.ignoresSafeArea())
         .navigationTitle(date.formatted(date: .abbreviated, time: .omitted))
         .navigationBarTitleDisplayMode(.inline)
         .portraitOnlyOrientationScope()
@@ -95,7 +105,7 @@ private struct SessionDetailRow: View {
             }
             .font(.subheadline)
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, 18)
     }
 
     private var timeRangeText: String {

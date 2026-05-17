@@ -21,14 +21,14 @@ struct SettingsView: View {
             }
 
             Section("Appearance") {
-                Toggle("Pure Black Mode", isOn: $pureBlackModeEnabled)
+                Toggle("Pure Black", isOn: $pureBlackModeEnabled)
             }
 
             Section("Reminders") {
-                Toggle("Daily Reminder", isOn: dailyReminderToggleBinding)
+                Toggle("Daily reminder", isOn: dailyReminderToggleBinding)
 
                 DatePicker(
-                    "Reminder Time",
+                    "Reminder time",
                     selection: reminderTimeBinding,
                     displayedComponents: .hourAndMinute
                 )
@@ -49,6 +49,10 @@ struct SettingsView: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .formStyle(.grouped)
+        .scrollContentBackground(.hidden)
+        .background(ResettaTheme.screenBackground.ignoresSafeArea())
+        .tint(ResettaTheme.accentText)
         .navigationTitle("Settings")
         .portraitOnlyOrientationScope()
         .alert("Notifications Disabled", isPresented: $showsNotificationSettingsAlert) {

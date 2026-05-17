@@ -13,6 +13,7 @@ struct ActiveSessionView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Environment(SessionTimerService.self) private var timer
     @ScaledMetric(relativeTo: .largeTitle) private var timerFontSize: CGFloat = 86
+    @State private var hasAppeared = false
     @State private var hasFinished = false
     @State private var hideEndButtonTask: Task<Void, Never>?
     @State private var showEndButton = false
@@ -21,61 +22,59 @@ struct ActiveSessionView: View {
 
     var body: some View {
         ZStack {
-            ResettaTheme.activeBackground(pureBlack: pureBlackModeEnabled)
+            sessionBackground
                 .ignoresSafeArea()
 
             GeometryReader { proxy in
-                let availableFontSize = max(CGFloat(52), min(proxy.size.width * 0.26, proxy.size.height * 0.42))
-                let resolvedFontSize = min(timerFontSize, availableFontSize)
+                let isLandscape = proxy.size.width > proxy.size.height
+                let resolvedFontSize = timerFontSize(for: proxy.size)
 
-                Text(TimeFormatting.countdown(timer.remainingTime))
-                    .font(.system(size: resolvedFontSize, weight: .medium, design: .monospaced))
-                    .monospacedDigit()
-                    .foregroundStyle(.white.opacity(0.92))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.46)
-                    .accessibilityLabel(TimeFormatting.accessibleCountdown(timer.remainingTime))
-                    .accessibilityAddTraits(.updatesFrequently)
-                    .accessibilityHint("Shows the end session control")
-                    .accessibilityAction(named: Text("Show End Session Button")) {
-                        revealEndButton()
+                ZStack {
+                    Text(TimeFormatting.countdown(timer.remainingTime))
+                        .font(.system(size: resolvedFontSize, weight: .regular, design: .monospaced))
+                        .monospacedDigit()
+                        .foregroundStyle(.white.opacity(showEndConfirmation ? 0.34 : 0.92))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.46)
+                        .contentTransition(.numericText())
+                        .accessibilityLabel(TimeFormatting.accessibleCountdown(timer.remainingTime))
+                        .accessibilityAddTraits(.updatesFrequently)
+                        .accessibilityHint("Shows the end session control")
+                        .accessibilityAction(named: Text("Show End Session Button")) {
+                            revealEndButton()
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .padding(.horizontal, isLandscape ? 72 : 32)
+                        .offset(y: isLandscape ? -6 : -10)
+                        .opacity(hasAppeared ? 1 : 0)
+                        .animation(motionAnimation(duration: 0.32), value: showEndConfirmation)
+
+                    VStack {
+                        Spacer()
+
+                        if showEndButton && !showEndConfirmation {
+                            endSessionButton
+                                .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                        }
                     }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    .padding(.horizontal, 32)
-            }
+                    .padding(.bottom, bottomButtonPadding(proxy: proxy, isLandscape: isLandscape))
 
-            VStack {
-                Spacer()
+                    if showEndConfirmation {
+                        Color.black.opacity(0.42)
+                            .ignoresSafeArea()
+                            .accessibilityHidden(true)
+                            .onTapGesture {
+                                continueSession()
+                            }
+                            .transition(.opacity)
 
-                if showEndButton && !showEndConfirmation {
-                    Button(action: handleEndButtonTapped) {
-                        Text("End Session")
-                            .font(.subheadline.weight(.medium))
-                            .padding(.horizontal, 20)
-                            .frame(minHeight: 44)
-                            .background(.white.opacity(0.08), in: Capsule())
+                        EndSessionConfirmationView(
+                            onContinue: continueSession,
+                            onEnd: endSession
+                        )
+                        .transition(.opacity.combined(with: .scale(scale: 0.985)))
                     }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.white.opacity(0.74))
-                    .transition(.opacity)
-                    .accessibilityHint(endConfirmationEnabled ? "Shows a confirmation before ending the session" : "Ends the session")
                 }
-            }
-            .padding(.bottom, 50)
-
-            if showEndConfirmation {
-                Color.black.opacity(0.38)
-                    .ignoresSafeArea()
-                    .accessibilityHidden(true)
-                    .onTapGesture {
-                        continueSession()
-                    }
-
-                EndSessionConfirmationView(
-                    onContinue: continueSession,
-                    onEnd: endSession
-                )
-                .transition(.opacity)
             }
         }
         .contentShape(Rectangle())
@@ -85,6 +84,9 @@ struct ActiveSessionView: View {
         }
         .statusBarHidden(true)
         .onAppear {
+            withAnimation(motionAnimation(duration: 0.5)) {
+                hasAppeared = true
+            }
             resumeTimer()
         }
         .onDisappear {
@@ -101,6 +103,61 @@ struct ActiveSessionView: View {
                 break
             }
         }
+    }
+
+    @ViewBuilder
+    private var sessionBackground: some View {
+        if pureBlackModeEnabled {
+            Color.black
+        } else {
+            ZStack {
+                ResettaTheme.activeBackground(pureBlack: false)
+
+                LinearGradient(
+                    colors: [
+                        Color.white.opacity(0.035),
+                        Color.clear,
+                        Color.black.opacity(0.18)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .accessibilityHidden(true)
+            }
+        }
+    }
+
+    private var endSessionButton: some View {
+        Button(action: handleEndButtonTapped) {
+            Text("End Session")
+                .font(.subheadline.weight(.medium))
+                .padding(.horizontal, 22)
+                .frame(minWidth: 154)
+                .frame(minHeight: 52)
+        }
+        .buttonStyle(.plain)
+        .foregroundStyle(.white.opacity(0.72))
+        .background(.white.opacity(0.045), in: Capsule())
+        .glassEffect(.regular.tint(.white.opacity(0.05)).interactive(), in: Capsule())
+        .accessibilityHint(endConfirmationEnabled ? "Shows a confirmation before ending the session" : "Ends the session")
+    }
+
+    private func timerFontSize(for size: CGSize) -> CGFloat {
+        let isLandscape = size.width > size.height
+        let widthScale = isLandscape ? size.width * 0.17 : size.width * 0.26
+        let heightScale = isLandscape ? size.height * 0.54 : size.height * 0.42
+        let availableFontSize = max(CGFloat(52), min(widthScale, heightScale))
+        let preferredFontSize = isLandscape ? timerFontSize * 1.28 : timerFontSize
+
+        return min(preferredFontSize, availableFontSize)
+    }
+
+    private func bottomButtonPadding(proxy: GeometryProxy, isLandscape: Bool) -> CGFloat {
+        if isLandscape {
+            return max(22, proxy.safeAreaInsets.bottom + 16)
+        }
+
+        return max(50, proxy.safeAreaInsets.bottom + 34)
     }
 
     private func resumeTimer() {

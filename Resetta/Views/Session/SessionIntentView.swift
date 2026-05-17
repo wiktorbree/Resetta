@@ -8,35 +8,33 @@ struct SessionIntentView: View {
     @AppStorage(UserSettings.StorageKey.hapticsEnabled) private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
     @State private var selectedIntent: SessionIntent?
 
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 2)
+    private let columns = [GridItem(.adaptive(minimum: 148), spacing: 12)]
 
     var body: some View {
         GeometryReader { proxy in
             ScrollView {
-                VStack(alignment: .leading, spacing: 26) {
+                VStack(alignment: .leading, spacing: 34) {
                     HStack {
                         Spacer()
 
                         Button(action: onCancel) {
                             Image(systemName: "xmark")
-                                .font(.headline)
-                                .frame(width: 44, height: 44)
-                                .contentShape(Circle())
+                                .accessibilityHidden(true)
                         }
-                        .buttonStyle(.plain)
-                        .foregroundStyle(.secondary)
+                        .buttonStyle(ResettaIconButtonStyle())
                         .accessibilityLabel("Close")
                     }
 
-                    Spacer(minLength: 28)
+                    Spacer(minLength: 32)
 
-                    VStack(alignment: .leading, spacing: 10) {
+                    VStack(alignment: .leading, spacing: 12) {
                         Text(TimeFormatting.duration(duration))
-                            .font(.subheadline.weight(.semibold))
+                            .font(.footnote.weight(.medium))
                             .foregroundStyle(ResettaTheme.accentText)
 
                         Text("What are you doing this for?")
-                            .font(.title.weight(.semibold))
+                            .font(.largeTitle.weight(.semibold))
+                            .lineSpacing(2)
                             .fixedSize(horizontal: false, vertical: true)
                     }
 
@@ -46,7 +44,9 @@ struct SessionIntentView: View {
                                 title: intent.rawValue,
                                 isSelected: selectedIntent == intent
                             ) {
-                                selectedIntent = selectedIntent == intent ? nil : intent
+                                withAnimation(.easeInOut(duration: 0.18)) {
+                                    selectedIntent = selectedIntent == intent ? nil : intent
+                                }
                                 HapticsService.selection(enabled: hapticsEnabled)
                             }
                         }
@@ -58,19 +58,18 @@ struct SessionIntentView: View {
                         onStart(selectedIntent)
                     } label: {
                         Text("Start")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .frame(minHeight: 54)
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(ResettaTheme.accent)
-                    .controlSize(.large)
+                    .buttonStyle(ResettaPrimaryButtonStyle())
                 }
-                .padding(24)
-                .frame(minHeight: proxy.size.height, alignment: .top)
+                .padding(.horizontal, ResettaTheme.horizontalPadding(for: proxy.size.width))
+                .padding(.top, max(18, proxy.safeAreaInsets.top + 8))
+                .padding(.bottom, max(32, proxy.safeAreaInsets.bottom + 24))
+                .frame(maxWidth: ResettaTheme.contentWidth(for: proxy.size.width), minHeight: proxy.size.height, alignment: .top)
+                .frame(maxWidth: .infinity)
             }
+            .scrollIndicators(.hidden)
         }
-        .background(Color(.systemBackground))
+        .background(ResettaTheme.screenBackground.ignoresSafeArea())
         .portraitOnlyOrientationScope()
     }
 }
@@ -83,23 +82,11 @@ private struct IntentOptionButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.subheadline.weight(.medium))
                 .lineLimit(2)
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.85)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 56)
-                .background(
-                    isSelected ? AnyShapeStyle(ResettaTheme.accent) : AnyShapeStyle(ResettaTheme.quietFill),
-                    in: RoundedRectangle(cornerRadius: 14, style: .continuous)
-                )
-                .overlay {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .stroke(isSelected ? ResettaTheme.accent : ResettaTheme.subtleLine, lineWidth: 1)
-                }
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(isSelected ? Color.white : Color.primary)
+        .buttonStyle(ResettaOptionButtonStyle(isSelected: isSelected))
         .accessibilityLabel(title)
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
         .accessibilityAddTraits(isSelected ? .isSelected : [])

@@ -31,7 +31,7 @@ enum HapticsService {
 
     private static func subtleImpact(enabled: Bool, intensity: CGFloat) {
         guard enabled else { return }
-        let generator = UIImpactFeedbackGenerator(style: .light)
+        let generator = UIImpactFeedbackGenerator(style: .soft)
         generator.prepare()
         generator.impactOccurred(intensity: intensity)
     }

@@ -2,6 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct AppRootView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(UserSettings.StorageKey.hasCompletedOnboarding) private var hasCompletedOnboarding = false
     @AppStorage(UserSettings.StorageKey.remindersEnabled) private var remindersEnabled = UserSettings.defaults.remindersEnabled
@@ -10,16 +11,19 @@ struct AppRootView: View {
     @State private var onboardingStarterSession: OnboardingStarterSession?
 
     var body: some View {
-        Group {
+        ZStack {
             if hasCompletedOnboarding {
                 MainTabView()
+                    .transition(ResettaTheme.calmTransition)
             } else {
                 OnboardingView(
                     onComplete: completeOnboarding,
                     onStartFirstSession: startFirstSession(duration:)
                 )
+                .transition(ResettaTheme.calmTransition)
             }
         }
+        .animation(ResettaTheme.calmAnimation(reduceMotion: reduceMotion, duration: 0.32), value: hasCompletedOnboarding)
         .fullScreenCover(item: $onboardingStarterSession) { session in
             SessionFlowView(duration: session.duration)
         }

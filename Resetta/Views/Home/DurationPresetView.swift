@@ -12,16 +12,17 @@ struct DurationPresetView: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
                 .frame(maxWidth: .infinity)
-                .frame(minHeight: 46)
+                .frame(minHeight: 52)
                 .background(backgroundStyle, in: Capsule())
                 .overlay {
                     Capsule()
-                        .stroke(isSelected ? ResettaTheme.accent : ResettaTheme.subtleLine, lineWidth: 1)
+                        .stroke(isSelected ? ResettaTheme.accent.opacity(0.45) : ResettaTheme.subtleLine, lineWidth: 1)
                 }
                 .contentShape(Capsule())
         }
         .buttonStyle(.plain)
         .foregroundStyle(isSelected ? Color.white : Color.primary)
+        .animation(.easeInOut(duration: 0.18), value: isSelected)
         .accessibilityLabel("\(minutes) minutes")
         .accessibilityValue(isSelected ? "Selected" : "Not selected")
         .accessibilityAddTraits(isSelected ? .isSelected : [])

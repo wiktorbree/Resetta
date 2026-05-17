@@ -6,16 +6,17 @@ struct OnboardingPageView: View {
     let suggestedMinutes: Int?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 28) {
-            VStack(alignment: .leading, spacing: 18) {
+        VStack(alignment: .leading, spacing: 34) {
+            VStack(alignment: .leading, spacing: 20) {
                 Text(title)
                     .font(.largeTitle.weight(.semibold))
+                    .lineSpacing(2)
                     .fixedSize(horizontal: false, vertical: true)
 
                 Text(bodyText)
-                    .font(.title3)
+                    .font(.title3.weight(.regular))
                     .foregroundStyle(.secondary)
-                    .lineSpacing(4)
+                    .lineSpacing(5)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
@@ -31,26 +32,18 @@ private struct SuggestedSessionView: View {
     let minutes: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 16) {
             Divider()
+                .overlay(ResettaTheme.subtleLine)
 
-            HStack(spacing: 16) {
-                Image(systemName: "timer")
+            VStack(alignment: .leading, spacing: 6) {
+                Text("First reset")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+
+                Text("\(minutes)-minute detox")
                     .font(.title3.weight(.semibold))
-                    .foregroundStyle(ResettaTheme.accentText)
-                    .frame(width: 34, height: 34)
-                    .background(ResettaTheme.quietFill, in: Circle())
-                    .accessibilityHidden(true)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("First reset")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.secondary)
-
-                    Text("\(minutes)-minute detox")
-                        .font(.title3.weight(.semibold))
-                        .monospacedDigit()
-                }
+                    .monospacedDigit()
             }
             .accessibilityElement(children: .combine)
             .accessibilityLabel("Suggested first reset, \(minutes)-minute detox")

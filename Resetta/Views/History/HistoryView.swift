@@ -10,7 +10,7 @@ struct HistoryView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 26) {
+            VStack(alignment: .leading, spacing: 32) {
                 monthHeader
 
                 if sessions.isEmpty {
@@ -23,9 +23,13 @@ struct HistoryView: View {
                     )
                 }
             }
-            .padding(24)
+            .padding(.horizontal, 28)
+            .padding(.top, 28)
+            .padding(.bottom, 34)
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .scrollIndicators(.hidden)
+        .background(ResettaTheme.screenBackground.ignoresSafeArea())
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
         .portraitOnlyOrientationScope()
@@ -36,6 +40,7 @@ struct HistoryView: View {
             VStack(alignment: .leading, spacing: 8) {
                 Text(monthTitle)
                     .font(.largeTitle.weight(.semibold))
+                    .lineSpacing(2)
                     .fixedSize(horizontal: false, vertical: true)
 
                 Text(monthSummary)
@@ -60,16 +65,9 @@ struct HistoryView: View {
     private func monthButton(systemImage: String, label: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: systemImage)
-                .font(.subheadline.weight(.semibold))
-                .frame(width: 44, height: 44)
-                .background(ResettaTheme.quietFill, in: Circle())
-                .overlay {
-                    Circle()
-                        .stroke(ResettaTheme.subtleLine, lineWidth: 1)
-                }
+                .accessibilityHidden(true)
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.primary)
+        .buttonStyle(ResettaIconButtonStyle())
         .accessibilityLabel(label)
     }
 
@@ -175,14 +173,7 @@ struct HistoryView: View {
 
 private struct EmptyHistoryStateView: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Image(systemName: "clock")
-                .font(.title2.weight(.semibold))
-                .foregroundStyle(ResettaTheme.accentText)
-                .frame(width: 44, height: 44)
-                .background(ResettaTheme.quietFill, in: Circle())
-                .accessibilityHidden(true)
-
+        VStack(alignment: .leading, spacing: 10) {
             Text("No sessions yet")
                 .font(.title3.weight(.semibold))
 
@@ -191,11 +182,11 @@ private struct EmptyHistoryStateView: View {
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(18)
+        .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(ResettaTheme.quietFill, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .background(ResettaTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .stroke(ResettaTheme.subtleLine, lineWidth: 1)
         }
         .accessibilityElement(children: .combine)
@@ -247,9 +238,9 @@ private struct HistoryMonthGrid: View {
                 }
             }
         }
-        .padding(16)
+        .padding(18)
         .frame(maxWidth: .infinity)
-        .background(ResettaTheme.quietFill, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .background(ResettaTheme.surface, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         .overlay {
             RoundedRectangle(cornerRadius: 22, style: .continuous)
                 .stroke(ResettaTheme.subtleLine, lineWidth: 1)
