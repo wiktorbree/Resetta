@@ -2,7 +2,11 @@ import SwiftUI
 import SwiftData
 
 struct AppRootView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage(UserSettings.StorageKey.hasCompletedOnboarding) private var hasCompletedOnboarding = false
+    @AppStorage(UserSettings.StorageKey.remindersEnabled) private var remindersEnabled = UserSettings.defaults.remindersEnabled
+    @AppStorage(UserSettings.StorageKey.reminderHour) private var reminderHour = UserSettings.defaults.reminderHour
+    @AppStorage(UserSettings.StorageKey.reminderMinute) private var reminderMinute = UserSettings.defaults.reminderMinute
     @State private var onboardingStarterSession: OnboardingStarterSession?
 
     var body: some View {
@@ -20,6 +24,16 @@ struct AppRootView: View {
             SessionFlowView(duration: session.duration)
         }
         .portraitOnlyOrientationScope()
+        .task {
+            await reconcileReminderSettings()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+
+            Task {
+                await reconcileReminderSettings()
+            }
+        }
     }
 
     private func completeOnboarding() {
@@ -29,6 +43,33 @@ struct AppRootView: View {
     private func startFirstSession(duration: TimeInterval) {
         hasCompletedOnboarding = true
         onboardingStarterSession = OnboardingStarterSession(duration: duration)
+    }
+
+    private func reconcileReminderSettings() async {
+        let normalizedHour = UserSettings.normalizedReminderHour(reminderHour)
+        let normalizedMinute = UserSettings.normalizedReminderMinute(reminderMinute)
+
+        if reminderHour != normalizedHour {
+            reminderHour = normalizedHour
+        }
+
+        if reminderMinute != normalizedMinute {
+            reminderMinute = normalizedMinute
+        }
+
+        let result = await NotificationService.shared.synchronizeDailyReminder(
+            enabled: remindersEnabled,
+            hour: normalizedHour,
+            minute: normalizedMinute,
+            requestPermissionIfNeeded: false
+        )
+
+        switch result {
+        case .scheduled, .disabled:
+            break
+        case .permissionDenied, .permissionNotDetermined, .schedulingFailed:
+            remindersEnabled = false
+        }
     }
 }
 
