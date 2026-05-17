@@ -10,6 +10,13 @@ struct ReflectionView: View {
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 2)
 
+    init(session: DetoxSession, onSave: @escaping (SessionFeeling?, String) -> Void) {
+        self.session = session
+        self.onSave = onSave
+        _note = State(initialValue: session.note ?? "")
+        _selectedFeeling = State(initialValue: session.feeling)
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("How did it feel?")
@@ -61,10 +68,6 @@ struct ReflectionView: View {
         }
         .padding(24)
         .background(Color(.systemBackground))
-        .onAppear {
-            selectedFeeling = session.feeling
-            note = session.note ?? ""
-        }
         .portraitOnlyOrientationScope()
     }
 }
