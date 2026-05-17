@@ -1,0 +1,77 @@
+import SwiftUI
+
+struct CompletionView: View {
+    let session: DetoxSession
+    let onReflect: () -> Void
+    let onDone: () -> Void
+
+    var body: some View {
+        GeometryReader { proxy in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 36) {
+                    Spacer(minLength: 72)
+
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text(session.completed ? "Session complete." : "Session ended.")
+                            .font(.largeTitle.weight(.semibold))
+                            .lineSpacing(2)
+                            .fixedSize(horizontal: false, vertical: true)
+
+                        Text(bodyText)
+                            .font(.title3.weight(.regular))
+                            .foregroundStyle(.secondary)
+                            .lineSpacing(5)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Spacer(minLength: 64)
+
+                    VStack(spacing: 12) {
+                        Button(action: onReflect) {
+                            Text("Reflect")
+                        }
+                        .buttonStyle(ValePrimaryButtonStyle())
+
+                        Button(action: onDone) {
+                            Text("Done")
+                        }
+                        .buttonStyle(ValeQuietButtonStyle(foregroundStyle: AnyShapeStyle(Color.secondary)))
+                    }
+                }
+                .padding(.horizontal, ValeTheme.horizontalPadding(for: proxy.size.width))
+                .padding(.top, max(24, proxy.safeAreaInsets.top + 12))
+                .padding(.bottom, max(34, proxy.safeAreaInsets.bottom + 24))
+                .frame(maxWidth: ValeTheme.contentWidth(for: proxy.size.width), minHeight: proxy.size.height, alignment: .top)
+                .frame(maxWidth: .infinity)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .background(ValeTheme.screenBackground.ignoresSafeArea())
+        .portraitOnlyOrientationScope()
+    }
+
+    private var bodyText: String {
+        let duration = TimeFormatting.duration(session.actualDuration)
+
+        if session.completed {
+            return "You spent \(duration) without stimulation."
+        }
+
+        return "You stepped away for \(duration)."
+    }
+}
+
+#Preview {
+    CompletionView(
+        session: DetoxSession(
+            startDate: Date(),
+            endDate: Date().addingTimeInterval(15 * 60),
+            plannedDuration: 15 * 60,
+            actualDuration: 15 * 60,
+            completed: true,
+            intent: .doNothing
+        ),
+        onReflect: {},
+        onDone: {}
+    )
+}
