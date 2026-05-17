@@ -8,10 +8,10 @@ struct SessionIntentView: View {
     @AppStorage(UserSettings.StorageKey.hapticsEnabled) private var hapticsEnabled = UserSettings.defaults.hapticsEnabled
     @State private var selectedIntent: SessionIntent?
 
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 2)
+    private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 2)
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 28) {
+        VStack(alignment: .leading, spacing: 26) {
             HStack {
                 Spacer()
 
@@ -26,19 +26,19 @@ struct SessionIntentView: View {
                 .accessibilityLabel("Close")
             }
 
-            Spacer(minLength: 24)
+            Spacer(minLength: 28)
 
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 10) {
                 Text(TimeFormatting.duration(duration))
-                    .font(.subheadline.weight(.medium))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(ResettaTheme.accent)
 
                 Text("What are you doing this for?")
-                    .font(.largeTitle.weight(.semibold))
+                    .font(.title.weight(.semibold))
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            LazyVGrid(columns: columns, spacing: 12) {
+            LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(SessionIntent.allCases) { intent in
                     IntentOptionButton(
                         title: intent.rawValue,
@@ -50,7 +50,7 @@ struct SessionIntentView: View {
                 }
             }
 
-            Spacer(minLength: 24)
+            Spacer(minLength: 28)
 
             Button {
                 onStart(selectedIntent)
@@ -58,7 +58,7 @@ struct SessionIntentView: View {
                 Text("Start")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
-                    .frame(height: 56)
+                    .frame(height: 54)
             }
             .buttonStyle(.borderedProminent)
             .tint(ResettaTheme.accent)
@@ -78,15 +78,15 @@ private struct IntentOptionButton: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.headline)
+                .font(.subheadline.weight(.medium))
                 .frame(maxWidth: .infinity)
-                .frame(height: 58)
+                .frame(height: 56)
                 .background(
                     isSelected ? AnyShapeStyle(ResettaTheme.accent) : AnyShapeStyle(ResettaTheme.quietFill),
-                    in: RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    in: RoundedRectangle(cornerRadius: 14, style: .continuous)
                 )
                 .overlay {
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
                         .stroke(isSelected ? ResettaTheme.accent : ResettaTheme.subtleLine, lineWidth: 1)
                 }
         }

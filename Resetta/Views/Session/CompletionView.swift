@@ -6,37 +6,37 @@ struct CompletionView: View {
     let onDone: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            Spacer(minLength: 40)
+        VStack(alignment: .leading, spacing: 26) {
+            Spacer(minLength: 48)
 
-            VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 12) {
                 Text(session.completed ? "Session complete." : "Session ended.")
-                    .font(.largeTitle.weight(.semibold))
+                    .font(.title.weight(.semibold))
 
                 Text(bodyText)
-                    .font(.title3)
+                    .font(.body)
                     .foregroundStyle(.secondary)
-                    .lineSpacing(4)
+                    .lineSpacing(3)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            Spacer(minLength: 40)
+            Spacer(minLength: 48)
 
             VStack(spacing: 12) {
                 Button(action: onReflect) {
                     Text("Reflect")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 56)
+                        .frame(height: 54)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(ResettaTheme.accent)
 
                 Button(action: onDone) {
                     Text("Done")
-                        .font(.headline)
+                        .font(.subheadline.weight(.medium))
                         .frame(maxWidth: .infinity)
-                        .frame(height: 52)
+                        .frame(height: 50)
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.secondary)

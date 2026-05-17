@@ -8,9 +8,9 @@ struct DurationPresetView: View {
     var body: some View {
         Button(action: action) {
             Text("\(minutes)")
-                .font(.headline.monospacedDigit())
+                .font(.subheadline.weight(.semibold).monospacedDigit())
                 .frame(maxWidth: .infinity)
-                .frame(height: 48)
+                .frame(height: 46)
                 .background(backgroundStyle, in: Capsule())
                 .overlay {
                     Capsule()

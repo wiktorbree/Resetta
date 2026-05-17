@@ -21,11 +21,13 @@ struct SessionFlowView: View {
                     onStart: startSession(intent:),
                     onCancel: dismissFlow
                 )
+                .transition(.opacity)
             case .active:
                 ActiveSessionView(
                     onCompleted: { finishSession(completed: true) },
                     onEnded: { finishSession(completed: false) }
                 )
+                .transition(.opacity)
             case .completion:
                 if let savedSession {
                     CompletionView(
@@ -35,6 +37,7 @@ struct SessionFlowView: View {
                         },
                         onDone: dismissFlow
                     )
+                    .transition(.opacity)
                 }
             case .reflection:
                 if let savedSession {
@@ -50,16 +53,17 @@ struct SessionFlowView: View {
                             dismissFlow()
                         }
                     )
+                    .transition(.opacity)
                 }
             }
         }
         .interactiveDismissDisabled(stage == .active)
-        .animation(.easeInOut(duration: 0.2), value: stage)
+        .animation(.easeInOut(duration: 0.22), value: stage)
     }
 
     private func startSession(intent: SessionIntent?) {
         timer.start(duration: duration, intent: intent)
-        HapticsService.lightImpact(enabled: hapticsEnabled)
+        HapticsService.sessionStarted(enabled: hapticsEnabled)
         stage = .active
     }
 
@@ -71,7 +75,9 @@ struct SessionFlowView: View {
 
         storage.save(session, in: modelContext)
         savedSession = session
-        HapticsService.notification(completed ? .success : .warning, enabled: hapticsEnabled)
+        if completed {
+            HapticsService.sessionCompleted(enabled: hapticsEnabled)
+        }
         stage = .completion
     }
 

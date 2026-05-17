@@ -10,21 +10,20 @@ struct HomeView: View {
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 10), count: 4)
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 28) {
-            VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 26) {
+            VStack(alignment: .leading, spacing: 10) {
                 Text("Today")
-                    .font(.subheadline.weight(.medium))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.secondary)
 
                 Text("Ready to disconnect?")
-                    .font(.largeTitle.weight(.semibold))
+                    .font(.title.weight(.semibold))
                     .fixedSize(horizontal: false, vertical: true)
             }
 
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text("\(selectedMinutes)")
-                    .font(.system(size: 78, weight: .semibold, design: .rounded).monospacedDigit())
-                    .contentTransition(.numericText())
+                    .font(.system(size: 72, weight: .semibold, design: .rounded).monospacedDigit())
                     .accessibilityLabel("\(selectedMinutes) minutes selected")
 
                 Text(selectedMinutes == 1 ? "minute" : "minutes")
@@ -32,7 +31,7 @@ struct HomeView: View {
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, 18)
+            .padding(.top, 16)
 
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(presets, id: \.self) { minutes in
@@ -56,7 +55,7 @@ struct HomeView: View {
                     Text("Start Detox")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 56)
+                        .frame(height: 54)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(ResettaTheme.accent)

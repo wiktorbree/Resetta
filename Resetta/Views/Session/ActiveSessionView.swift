@@ -23,13 +23,13 @@ struct ActiveSessionView: View {
                 .ignoresSafeArea()
 
             Text(TimeFormatting.countdown(timer.remainingTime))
-                .font(.system(size: 92, weight: .semibold, design: .monospaced))
+                .font(.system(size: 86, weight: .medium, design: .monospaced))
                 .monospacedDigit()
-                .foregroundStyle(.white)
+                .foregroundStyle(.white.opacity(0.92))
                 .lineLimit(1)
-                .minimumScaleFactor(0.42)
+                .minimumScaleFactor(0.46)
                 .accessibilityLabel("\(TimeFormatting.countdown(timer.remainingTime)) remaining")
-                .padding(.horizontal, 28)
+                .padding(.horizontal, 32)
 
             VStack {
                 Spacer()
@@ -37,21 +37,21 @@ struct ActiveSessionView: View {
                 if showEndButton && !showEndConfirmation {
                     Button(action: handleEndButtonTapped) {
                         Text("End Session")
-                            .font(.headline)
-                            .padding(.horizontal, 24)
-                            .frame(height: 48)
-                            .background(.white.opacity(0.11), in: Capsule())
+                            .font(.subheadline.weight(.medium))
+                            .padding(.horizontal, 20)
+                            .frame(height: 44)
+                            .background(.white.opacity(0.08), in: Capsule())
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(.white.opacity(0.82))
+                    .foregroundStyle(.white.opacity(0.74))
                     .transition(.opacity)
                     .accessibilityHint(endConfirmationEnabled ? "Shows a confirmation before ending the session" : "Ends the session")
                 }
             }
-            .padding(.bottom, 52)
+            .padding(.bottom, 50)
 
             if showEndConfirmation {
-                Color.black.opacity(0.42)
+                Color.black.opacity(0.38)
                     .ignoresSafeArea()
                     .onTapGesture {
                         continueSession()
@@ -61,7 +61,7 @@ struct ActiveSessionView: View {
                     onContinue: continueSession,
                     onEnd: endSession
                 )
-                .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                .transition(.opacity)
             }
         }
         .contentShape(Rectangle())
@@ -126,9 +126,11 @@ struct ActiveSessionView: View {
 
     private func revealEndButton() {
         guard updateTimer() else { return }
-        HapticsService.lightImpact(enabled: hapticsEnabled)
+        if !showEndButton {
+            HapticsService.endSessionButtonRevealed(enabled: hapticsEnabled)
+        }
 
-        withAnimation(.easeInOut(duration: 0.18)) {
+        withAnimation(.easeInOut(duration: 0.22)) {
             showEndButton = true
         }
 
@@ -141,14 +143,13 @@ struct ActiveSessionView: View {
     }
 
     private func hideEndButton() {
-        withAnimation(.easeInOut(duration: 0.24)) {
+        withAnimation(.easeInOut(duration: 0.26)) {
             showEndButton = false
         }
     }
 
     private func handleEndButtonTapped() {
         guard updateTimer() else { return }
-        HapticsService.lightImpact(enabled: hapticsEnabled)
         hideEndButtonTask?.cancel()
         hideEndButtonTask = nil
 
