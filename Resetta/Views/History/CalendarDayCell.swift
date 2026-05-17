@@ -5,7 +5,7 @@ struct CalendarDayCell: View {
     let sessions: [DetoxSession]
     let isInDisplayedMonth: Bool
     let isToday: Bool
-    let maxCompletedDuration: TimeInterval
+    let maxDayDuration: TimeInterval
 
     var body: some View {
         VStack(spacing: 7) {
@@ -45,14 +45,13 @@ struct CalendarDayCell: View {
         return AnyShapeStyle(isInDisplayedMonth ? Color.primary : Color.secondary.opacity(0.45))
     }
 
-    private var completedDuration: TimeInterval {
+    private var totalDuration: TimeInterval {
         sessions
-            .filter { $0.completed }
             .reduce(0) { $0 + $1.actualDuration }
     }
 
     private var dotSize: CGFloat {
-        guard completedDuration > 0 else {
+        guard !sessions.isEmpty else {
             return 4
         }
 
@@ -60,7 +59,7 @@ struct CalendarDayCell: View {
     }
 
     private var dotOpacity: Double {
-        guard completedDuration > 0 else {
+        guard !sessions.isEmpty else {
             return 0
         }
 
@@ -68,22 +67,22 @@ struct CalendarDayCell: View {
     }
 
     private var durationScale: Double {
-        guard maxCompletedDuration > 0 else {
+        guard maxDayDuration > 0 else {
             return 0
         }
 
-        return min(1, completedDuration / maxCompletedDuration)
+        return min(1, totalDuration / maxDayDuration)
     }
 
     private var accessibilityLabel: String {
         let dateText = date.formatted(date: .abbreviated, time: .omitted)
 
-        guard completedDuration > 0 else {
-            return "\(dateText), no completed sessions"
+        guard !sessions.isEmpty else {
+            return "\(dateText), no sessions"
         }
 
         let sessionText = sessions.count == 1 ? "1 session" : "\(sessions.count) sessions"
-        return "\(dateText), \(TimeFormatting.duration(completedDuration)) completed, \(sessionText)"
+        return "\(dateText), \(TimeFormatting.duration(totalDuration)), \(sessionText)"
     }
 }
 
@@ -101,7 +100,7 @@ struct CalendarDayCell: View {
         ],
         isInDisplayedMonth: true,
         isToday: true,
-        maxCompletedDuration: 45 * 60
+        maxDayDuration: 45 * 60
     )
     .padding()
 }

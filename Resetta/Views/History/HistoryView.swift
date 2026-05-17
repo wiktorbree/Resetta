@@ -15,7 +15,7 @@ struct HistoryView: View {
                 HistoryMonthGrid(
                     calendar: calendar,
                     days: calendarDays,
-                    maxCompletedDuration: maxCompletedDayDuration
+                    maxDayDuration: maxDayDuration
                 )
             }
             .padding(24)
@@ -73,14 +73,13 @@ struct HistoryView: View {
     }
 
     private var monthSummary: String {
-        let completedSessions = sessionsInDisplayedMonth.filter { $0.completed }
-        let totalDuration = completedSessions.reduce(0) { $0 + $1.actualDuration }
+        let totalDuration = sessionsInDisplayedMonth.reduce(0) { $0 + $1.actualDuration }
 
-        guard !completedSessions.isEmpty else {
+        guard !sessionsInDisplayedMonth.isEmpty else {
             return "A quiet month."
         }
 
-        let sessionText = completedSessions.count == 1 ? "1 completed session" : "\(completedSessions.count) completed sessions"
+        let sessionText = sessionsInDisplayedMonth.count == 1 ? "1 session" : "\(sessionsInDisplayedMonth.count) sessions"
         return "\(TimeFormatting.duration(totalDuration)) across \(sessionText)"
     }
 
@@ -134,9 +133,9 @@ struct HistoryView: View {
         return days
     }
 
-    private var maxCompletedDayDuration: TimeInterval {
+    private var maxDayDuration: TimeInterval {
         calendarDays
-            .map(\.completedDuration)
+            .map(\.totalDuration)
             .max() ?? 0
     }
 
@@ -172,7 +171,7 @@ struct HistoryView: View {
 private struct HistoryMonthGrid: View {
     let calendar: Calendar
     let days: [HistoryCalendarDay]
-    let maxCompletedDuration: TimeInterval
+    let maxDayDuration: TimeInterval
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 3), count: 7)
 
@@ -195,7 +194,7 @@ private struct HistoryMonthGrid: View {
                             sessions: day.sessions,
                             isInDisplayedMonth: day.isInDisplayedMonth,
                             isToday: day.isToday,
-                            maxCompletedDuration: maxCompletedDuration
+                            maxDayDuration: maxDayDuration
                         )
                     } else {
                         NavigationLink {
@@ -206,7 +205,7 @@ private struct HistoryMonthGrid: View {
                                 sessions: day.sessions,
                                 isInDisplayedMonth: day.isInDisplayedMonth,
                                 isToday: day.isToday,
-                                maxCompletedDuration: maxCompletedDuration
+                                maxDayDuration: maxDayDuration
                             )
                         }
                         .buttonStyle(.plain)
@@ -239,9 +238,8 @@ private struct HistoryCalendarDay: Identifiable {
 
     var id: Date { date }
 
-    var completedDuration: TimeInterval {
+    var totalDuration: TimeInterval {
         sessions
-            .filter { $0.completed }
             .reduce(0) { $0 + $1.actualDuration }
     }
 }
