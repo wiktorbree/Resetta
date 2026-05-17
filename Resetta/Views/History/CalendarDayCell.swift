@@ -3,47 +3,86 @@ import SwiftUI
 struct CalendarDayCell: View {
     let date: Date
     let sessions: [DetoxSession]
+    let isInDisplayedMonth: Bool
+    let isToday: Bool
+    let maxDayDuration: TimeInterval
 
     var body: some View {
-        HStack(spacing: 14) {
+        VStack(spacing: 7) {
+            Text("\(dayNumber)")
+                .font(.callout.weight(isToday ? .semibold : .regular).monospacedDigit())
+                .foregroundStyle(dayForegroundStyle)
+                .frame(width: 30, height: 30)
+                .background {
+                    if isToday {
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .fill(ResettaTheme.accent.opacity(0.11))
+                    }
+                }
+
             Circle()
-                .fill(ResettaTheme.accent.opacity(dotOpacity))
+                .fill(ResettaTheme.accent)
                 .frame(width: dotSize, height: dotSize)
-                .frame(width: 18, height: 18)
+                .opacity(dotOpacity)
                 .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(date.formatted(date: .abbreviated, time: .omitted))
-                    .font(.headline)
-
-                Text(sessionCountText)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            Text(TimeFormatting.duration(totalDuration))
-                .font(.subheadline.monospacedDigit())
-                .foregroundStyle(.secondary)
         }
-        .padding(.vertical, 6)
+        .frame(maxWidth: .infinity)
+        .frame(height: 50)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLabel)
+    }
+
+    private var dayNumber: Int {
+        Calendar.current.component(.day, from: date)
+    }
+
+    private var dayForegroundStyle: some ShapeStyle {
+        if isToday {
+            return AnyShapeStyle(ResettaTheme.accent)
+        }
+
+        return AnyShapeStyle(isInDisplayedMonth ? Color.primary : Color.secondary.opacity(0.45))
     }
 
     private var totalDuration: TimeInterval {
-        sessions.reduce(0) { $0 + $1.actualDuration }
-    }
-
-    private var sessionCountText: String {
-        sessions.count == 1 ? "1 session" : "\(sessions.count) sessions"
+        sessions
+            .reduce(0) { $0 + $1.actualDuration }
     }
 
     private var dotSize: CGFloat {
-        min(14, 7 + CGFloat(totalDuration / 600))
+        guard !sessions.isEmpty else {
+            return 4
+        }
+
+        return 5 + CGFloat(durationScale * 5)
     }
 
     private var dotOpacity: Double {
-        min(0.95, 0.35 + totalDuration / 3600)
+        guard !sessions.isEmpty else {
+            return 0
+        }
+
+        return 0.35 + durationScale * 0.55
+    }
+
+    private var durationScale: Double {
+        guard maxDayDuration > 0 else {
+            return 0
+        }
+
+        return min(1, totalDuration / maxDayDuration)
+    }
+
+    private var accessibilityLabel: String {
+        let dateText = date.formatted(date: .abbreviated, time: .omitted)
+
+        guard !sessions.isEmpty else {
+            return "\(dateText), no sessions"
+        }
+
+        let sessionText = sessions.count == 1 ? "1 session" : "\(sessions.count) sessions"
+        return "\(dateText), \(TimeFormatting.duration(totalDuration)), \(sessionText)"
     }
 }
 
@@ -58,7 +97,10 @@ struct CalendarDayCell: View {
                 actualDuration: 15 * 60,
                 completed: true
             )
-        ]
+        ],
+        isInDisplayedMonth: true,
+        isToday: true,
+        maxDayDuration: 45 * 60
     )
     .padding()
 }
