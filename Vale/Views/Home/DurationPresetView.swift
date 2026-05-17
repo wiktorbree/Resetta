@@ -14,10 +14,6 @@ struct DurationPresetView: View {
                 .frame(maxWidth: .infinity)
                 .frame(minHeight: 52)
                 .background(backgroundStyle, in: Capsule())
-                .overlay {
-                    Capsule()
-                        .stroke(isSelected ? ValeTheme.secondaryAccent.opacity(0.55) : ValeTheme.subtleLine, lineWidth: 1)
-                }
                 .contentShape(Capsule())
         }
         .buttonStyle(.plain)
@@ -29,7 +25,7 @@ struct DurationPresetView: View {
     }
 
     private var backgroundStyle: some ShapeStyle {
-        isSelected ? AnyShapeStyle(ValeTheme.accent) : AnyShapeStyle(ValeTheme.quietFill)
+        isSelected ? AnyShapeStyle(ValeTheme.accent) : AnyShapeStyle(ValeTheme.quietFill.opacity(0.72))
     }
 }
 

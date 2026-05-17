@@ -7,7 +7,7 @@ struct HomeView: View {
     @State private var selectedMinutes = 5
     @State private var pendingDuration: DurationSelection?
 
-    private let presets = [5, 15, 30, 60]
+    private let presets = [5, 10, 15, 20]
     private let columns = [GridItem(.adaptive(minimum: 72), spacing: 12)]
 
     var body: some View {

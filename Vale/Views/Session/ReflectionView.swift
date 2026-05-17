@@ -58,11 +58,7 @@ struct ReflectionView: View {
                                 .accessibilityHidden(true)
                         }
                     }
-                    .background(ValeTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                    .overlay {
-                        RoundedRectangle(cornerRadius: 20, style: .continuous)
-                            .stroke(ValeTheme.subtleLine, lineWidth: 1)
-                    }
+                    .background(ValeTheme.quietFill.opacity(0.46), in: RoundedRectangle(cornerRadius: 20, style: .continuous))
 
                     Spacer()
 

@@ -34,6 +34,7 @@ private struct SuggestedSessionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Divider()
+                .hidden()
                 .overlay(ValeTheme.subtleLine)
 
             VStack(alignment: .leading, spacing: 6) {

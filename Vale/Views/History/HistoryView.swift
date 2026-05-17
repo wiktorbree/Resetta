@@ -185,10 +185,6 @@ private struct EmptyHistoryStateView: View {
         .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(ValeTheme.surface, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .stroke(ValeTheme.subtleLine, lineWidth: 1)
-        }
         .accessibilityElement(children: .combine)
     }
 }
@@ -241,10 +237,6 @@ private struct HistoryMonthGrid: View {
         .padding(18)
         .frame(maxWidth: .infinity)
         .background(ValeTheme.surface, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .stroke(ValeTheme.subtleLine, lineWidth: 1)
-        }
     }
 
     private var weekdaySymbols: [String] {

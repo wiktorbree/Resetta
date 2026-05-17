@@ -30,15 +30,13 @@ struct DayDetailView: View {
 
                         if index < sortedSessions.count - 1 {
                             Divider()
+                                .hidden()
+                                .overlay(ValeTheme.subtleLine)
                         }
                     }
                 }
                 .padding(.horizontal, 18)
                 .background(ValeTheme.surface, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .stroke(ValeTheme.subtleLine, lineWidth: 1)
-                }
             }
             .padding(.horizontal, 28)
             .padding(.top, 28)

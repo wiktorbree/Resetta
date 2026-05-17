@@ -62,10 +62,10 @@ enum ValeTheme {
     })
     static let subtleLine = Color(uiColor: UIColor { traits in
         if traits.userInterfaceStyle == .dark {
-            return UIColor(white: 1, alpha: 0.11)
+            return UIColor(white: 1, alpha: 0.055)
         }
 
-        return UIColor(white: 0, alpha: 0.08)
+        return UIColor(white: 0, alpha: 0.04)
     })
 
     static func activeBackground(pureBlack: Bool) -> Color {
@@ -109,7 +109,7 @@ struct ValePrimaryButtonStyle: ButtonStyle {
             .frame(minHeight: 58)
             .padding(.horizontal, 6)
             .background {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                RoundedRectangle(cornerRadius: 50, style: .continuous)
                     .fill(ValeTheme.accent.opacity(isEnabled ? 1 : 0.36))
             }
             .scaleEffect(reduceMotion ? 1 : (configuration.isPressed ? 0.985 : 1))
@@ -154,11 +154,7 @@ struct ValeOptionButtonStyle: ButtonStyle {
             .padding(.horizontal, 8)
             .background {
                 RoundedRectangle(cornerRadius: 17, style: .continuous)
-                    .fill(isSelected ? ValeTheme.accent : ValeTheme.surface)
-            }
-            .overlay {
-                RoundedRectangle(cornerRadius: 17, style: .continuous)
-                    .stroke(isSelected ? ValeTheme.secondaryAccent.opacity(0.48) : ValeTheme.subtleLine, lineWidth: 1)
+                    .fill(isSelected ? ValeTheme.accent : ValeTheme.quietFill.opacity(0.72))
             }
             .scaleEffect(reduceMotion ? 1 : (configuration.isPressed ? 0.985 : 1))
             .opacity(configuration.isPressed ? 0.82 : 1)
@@ -175,11 +171,7 @@ struct ValeIconButtonStyle: ButtonStyle {
             .font(.subheadline.weight(.semibold))
             .foregroundStyle(.primary)
             .frame(width: 46, height: 46)
-            .background(ValeTheme.surface, in: Circle())
-            .overlay {
-                Circle()
-                    .stroke(ValeTheme.subtleLine, lineWidth: 1)
-            }
+            .background(ValeTheme.quietFill.opacity(configuration.isPressed ? 0.9 : 0.72), in: Circle())
             .scaleEffect(reduceMotion ? 1 : (configuration.isPressed ? 0.96 : 1))
             .opacity(configuration.isPressed ? 0.7 : 1)
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.16), value: configuration.isPressed)
