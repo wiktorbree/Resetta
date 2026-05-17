@@ -9,14 +9,41 @@ struct DayDetailView: View {
     }
 
     var body: some View {
-        List {
-            ForEach(sortedSessions, id: \.id) { session in
-                SessionDetailRow(session: session)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 28) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(TimeFormatting.duration(totalDuration))
+                        .font(.system(size: 44, weight: .semibold, design: .rounded).monospacedDigit())
+
+                    Text(summaryText)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+
+                VStack(spacing: 0) {
+                    ForEach(sortedSessions.indices, id: \.self) { index in
+                        SessionDetailRow(session: sortedSessions[index])
+
+                        if index < sortedSessions.count - 1 {
+                            Divider()
+                        }
+                    }
+                }
             }
+            .padding(24)
         }
         .navigationTitle(date.formatted(date: .abbreviated, time: .omitted))
         .navigationBarTitleDisplayMode(.inline)
         .portraitOnlyOrientationScope()
+    }
+
+    private var totalDuration: TimeInterval {
+        sessions.reduce(0) { $0 + $1.actualDuration }
+    }
+
+    private var summaryText: String {
+        let sessionText = sessions.count == 1 ? "1 session" : "\(sessions.count) sessions"
+        return "\(sessionText) on \(date.formatted(date: .long, time: .omitted))"
     }
 }
 
@@ -24,39 +51,55 @@ private struct SessionDetailRow: View {
     let session: DetoxSession
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(timeRangeText)
+                    .font(.headline)
+
+                Spacer(minLength: 12)
+
                 Text(TimeFormatting.duration(session.actualDuration))
-                    .font(.headline.monospacedDigit())
-
-                Spacer()
-
-                Text(session.completed ? "Completed" : "Ended")
-                    .font(.caption.weight(.medium))
+                    .font(.subheadline.monospacedDigit())
                     .foregroundStyle(.secondary)
             }
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text(TimeFormatting.clockTime(session.startDate))
-
+            VStack(alignment: .leading, spacing: 7) {
                 if let intent = session.intent {
-                    Text("Intent: \(intent.rawValue)")
+                    DetailLine(title: "Intent", value: intent.rawValue)
                 }
 
                 if let feeling = session.feeling {
-                    Text("Feeling: \(feeling.rawValue)")
+                    DetailLine(title: "Feeling", value: feeling.rawValue)
                 }
 
                 if let note = session.note {
                     Text(note)
                         .foregroundStyle(.secondary)
-                        .padding(.top, 4)
+                        .padding(.top, 2)
                 }
             }
             .font(.subheadline)
-            .foregroundStyle(.secondary)
         }
-        .padding(.vertical, 8)
+        .padding(.vertical, 16)
+    }
+
+    private var timeRangeText: String {
+        "\(TimeFormatting.clockTime(session.startDate)) - \(TimeFormatting.clockTime(session.endDate))"
+    }
+}
+
+private struct DetailLine: View {
+    let title: String
+    let value: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text(title)
+                .foregroundStyle(.secondary)
+
+            Text(value)
+                .foregroundStyle(.primary)
+        }
     }
 }
 
