@@ -2,19 +2,41 @@ import SwiftUI
 import UIKit
 
 enum ValeTheme {
-    static let accent = Color(uiColor: UIColor { traits in
+    static let primaryAccent = Color(uiColor: UIColor { traits in
         if traits.userInterfaceStyle == .dark {
-            return UIColor(red: 0.42, green: 0.57, blue: 0.68, alpha: 1)
+            return UIColor(red: 0.694, green: 0.659, blue: 0.604, alpha: 1)
         }
 
-        return UIColor(red: 0.24, green: 0.38, blue: 0.51, alpha: 1)
+        return UIColor(red: 0.635, green: 0.584, blue: 0.529, alpha: 1)
     })
+    static let secondaryAccent = Color(uiColor: UIColor { traits in
+        if traits.userInterfaceStyle == .dark {
+            return UIColor(red: 0.784, green: 0.753, blue: 0.71, alpha: 1)
+        }
+
+        return UIColor(red: 0.694, green: 0.659, blue: 0.604, alpha: 1)
+    })
+    static let softHighlight = Color(uiColor: UIColor { traits in
+        if traits.userInterfaceStyle == .dark {
+            return UIColor(red: 0.847, green: 0.82, blue: 0.784, alpha: 1)
+        }
+
+        return UIColor(red: 0.784, green: 0.753, blue: 0.71, alpha: 1)
+    })
+    static let accent = primaryAccent
     static let accentText = Color(uiColor: UIColor { traits in
         if traits.userInterfaceStyle == .dark {
-            return UIColor(red: 0.68, green: 0.80, blue: 0.88, alpha: 1)
+            return UIColor(red: 0.784, green: 0.753, blue: 0.71, alpha: 1)
         }
 
-        return UIColor(red: 0.24, green: 0.38, blue: 0.51, alpha: 1)
+        return UIColor(red: 0.478, green: 0.431, blue: 0.384, alpha: 1)
+    })
+    static let accentForeground = Color(uiColor: UIColor { traits in
+        if traits.userInterfaceStyle == .dark {
+            return UIColor(red: 0.122, green: 0.11, blue: 0.098, alpha: 1)
+        }
+
+        return UIColor(red: 0.122, green: 0.11, blue: 0.098, alpha: 1)
     })
     static let screenBackground = Color(uiColor: UIColor { traits in
         if traits.userInterfaceStyle == .dark {
@@ -82,7 +104,7 @@ struct ValePrimaryButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline.weight(.semibold))
-            .foregroundStyle(.white)
+            .foregroundStyle(ValeTheme.accentForeground.opacity(isEnabled ? 1 : 0.64))
             .frame(maxWidth: .infinity)
             .frame(minHeight: 58)
             .padding(.horizontal, 6)
@@ -126,7 +148,7 @@ struct ValeOptionButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.subheadline.weight(.medium))
-            .foregroundStyle(isSelected ? Color.white : Color.primary)
+            .foregroundStyle(isSelected ? ValeTheme.accentForeground : Color.primary)
             .frame(maxWidth: .infinity)
             .frame(minHeight: 58)
             .padding(.horizontal, 8)
@@ -136,7 +158,7 @@ struct ValeOptionButtonStyle: ButtonStyle {
             }
             .overlay {
                 RoundedRectangle(cornerRadius: 17, style: .continuous)
-                    .stroke(isSelected ? ValeTheme.accent.opacity(0.42) : ValeTheme.subtleLine, lineWidth: 1)
+                    .stroke(isSelected ? ValeTheme.secondaryAccent.opacity(0.48) : ValeTheme.subtleLine, lineWidth: 1)
             }
             .scaleEffect(reduceMotion ? 1 : (configuration.isPressed ? 0.985 : 1))
             .opacity(configuration.isPressed ? 0.82 : 1)

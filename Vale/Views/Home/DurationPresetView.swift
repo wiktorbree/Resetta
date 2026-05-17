@@ -16,12 +16,12 @@ struct DurationPresetView: View {
                 .background(backgroundStyle, in: Capsule())
                 .overlay {
                     Capsule()
-                        .stroke(isSelected ? ValeTheme.accent.opacity(0.45) : ValeTheme.subtleLine, lineWidth: 1)
+                        .stroke(isSelected ? ValeTheme.secondaryAccent.opacity(0.55) : ValeTheme.subtleLine, lineWidth: 1)
                 }
                 .contentShape(Capsule())
         }
         .buttonStyle(.plain)
-        .foregroundStyle(isSelected ? Color.white : Color.primary)
+        .foregroundStyle(isSelected ? ValeTheme.accentForeground : Color.primary)
         .animation(.easeInOut(duration: 0.18), value: isSelected)
         .accessibilityLabel("\(minutes) minutes")
         .accessibilityValue(isSelected ? "Selected" : "Not selected")

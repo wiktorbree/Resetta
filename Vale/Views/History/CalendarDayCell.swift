@@ -16,12 +16,12 @@ struct CalendarDayCell: View {
                 .background {
                     if isToday {
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .fill(ValeTheme.accentText.opacity(0.14))
+                            .fill(ValeTheme.softHighlight.opacity(0.14))
                     }
                 }
 
             Circle()
-                .fill(ValeTheme.accentText)
+                .fill(ValeTheme.secondaryAccent)
                 .frame(width: dotSize, height: dotSize)
                 .opacity(dotOpacity)
                 .accessibilityHidden(true)
